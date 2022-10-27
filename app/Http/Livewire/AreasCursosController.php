@@ -26,9 +26,10 @@ class AreasCursosController extends Component
 
     public function render()
     {
-        $areas = Area::when($this->search, function ($query) {
-            $query->where('nombre', 'like', '%' . $this->search . '%');
-        })->paginate($this->pagination);
+        $areas = Area::withCount('asignaturas')
+            ->when($this->search, function ($query) {
+                $query->where('nombre', 'like', '%' . $this->search . '%');
+            })->paginate($this->pagination);
 
         return view('livewire.areasCursos.component', [
             'areas' => $areas,

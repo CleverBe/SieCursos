@@ -39,7 +39,7 @@
                                             <i class="far fa-edit"></i>
                                         </x-button>
                                         <x-button
-                                            onclick="Confirm('{{ $area->id }}','{{ $area->nombre }}','{{ $area->asignaturas->count() }}')"
+                                            onclick="Confirm('{{ $area->id }}','{{ $area->nombre }}','{{ $area->asignaturas_count }}')"
                                             title="Eliminar">
                                             <i class="far fa-trash-alt"></i>
                                         </x-button>
