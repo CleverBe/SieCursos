@@ -13,8 +13,7 @@
                     <x-select wire:model.defer='asignatura'>
                         <option value="Elegir" disabled selected>Elegir</option>
                         @foreach ($asignaturas as $asignatura)
-                            <option value="{{ $asignatura->id }}">{{ $asignatura->nombre }} -
-                                {{ $asignatura->duracion }} meses
+                            <option value="{{ $asignatura->id }}">{{ $asignatura->nombre }}
                             </option>
                         @endforeach
                     </x-select>
@@ -23,7 +22,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12 col-md-3">
                 <div class="form-group">
                     <x-label texto="Aula" />
                     <x-select wire:model.defer='aula'>
@@ -37,7 +36,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12 col-md-3">
                 <div class="form-group">
                     <x-label texto="Modalidad" />
                     <x-select wire:model.defer='modalidad'>
@@ -64,44 +63,7 @@
                 </div>
             </div>
             @if ($profesor != 'Elegir')
-                <div class="col-sm-12 col-md-6">
-                    <div class="form-group">
-                        <x-label texto="Hora inicio" />
-                        <x-input type="time" wire:model.lazy="hora_inicio" />
-                        @error('hora_inicio')
-                            <span class="text-danger er">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-6">
-                    <div class="form-group">
-                        <x-label texto="Hora fin" />
-                        <x-input type="time" wire:model.lazy="hora_fin" />
-                        @error('hora_fin')
-                            <span class="text-danger er">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="col-sm-12 col-md-6">
-                    <div class="form-group">
-                        <x-label texto="Fecha inicio" />
-                        <x-input type="date" wire:model.lazy="fecha_inicio" />
-                        @error('fecha_inicio')
-                            <span class="text-danger er">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-6">
-                    <div class="form-group">
-                        <x-label texto="Fecha fin" />
-                        <x-input type="date" wire:model.lazy="fecha_fin" />
-                        @error('fecha_fin')
-                            <span class="text-danger er">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-6">
+                <div class="col-sm-6 col-md-6">
                     <div class="form-group">
                         <x-label texto="Periodo" />
                         <x-input type="month" wire:model.defer="periodo" />
@@ -110,75 +72,156 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-sm-12 col-md-6">
+                <div class="col-sm-6 col-md-3">
                     <div class="form-group">
-                        <x-label texto="Dia de cobro" />
-                        <x-input type="number" wire:model.defer="dia_de_cobro" />
-                        @error('dia_de_cobro')
+                        <x-label texto="Hora inicio" />
+                        <x-input type="time" wire:model.lazy="hora_inicio" />
+                        @error('hora_inicio')
                             <span class="text-danger er">{{ $message }}</span>
                         @enderror
                     </div>
                 </div>
-            @endif
-            @if ($hora_inicio && $hora_fin)
-                <div class="col-sm-12 col-md-6">
+                <div class="col-sm-6 col-md-3">
                     <div class="form-group">
-                        <x-label texto="Dias" />
-                        <div class="n-chk">
-                            <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
-                                <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
-                                    class="new-control-input" wire:model.lazy="lunes">
-                                <span class="new-control-indicator"></span>Lu
-                            </label>
-                            <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
-                                <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
-                                    class="new-control-input" wire:model.lazy="martes">
-                                <span class="new-control-indicator"></span>Ma
-                            </label>
-                            <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
-                                <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
-                                    class="new-control-input" wire:model.lazy="miercoles">
-                                <span class="new-control-indicator"></span>Mi
-                            </label>
-                            <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
-                                <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
-                                    class="new-control-input" wire:model.lazy="jueves">
-                                <span class="new-control-indicator"></span>Ju
-                            </label>
-                            <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
-                                <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
-                                    class="new-control-input" wire:model.lazy="viernes">
-                                <span class="new-control-indicator"></span>Vi
-                            </label>
-                            <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
-                                <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
-                                    class="new-control-input" wire:model.lazy="sabado">
-                                <span class="new-control-indicator"></span>Sa
-                            </label>
-                            <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
-                                <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
-                                    class="new-control-input" wire:model.lazy="domingo">
-                                <span class="new-control-indicator"></span>Do
-                            </label>
+                        <x-label texto="Hora fin" />
+                        <x-input type="time" wire:model.lazy="hora_fin" />
+                        @error('hora_fin')
+                            <span class="text-danger er">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-3">
+                    <div class="form-group">
+                        <x-label texto="Fecha inicio" />
+                        <x-input type="date" wire:model.lazy="fecha_inicio" />
+                        @error('fecha_inicio')
+                            <span class="text-danger er">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-3">
+                    <div class="form-group">
+                        <x-label texto="Fecha fin" />
+                        <x-input type="date" wire:model.lazy="fecha_fin" />
+                        @error('fecha_fin')
+                            <span class="text-danger er">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                @if ($hora_inicio && $hora_fin)
+                    <div class="col-sm-12 col-md-12">
+                        <div class="form-group">
+                            <x-label texto="Dias" />
+                            <div class="n-chk text-center">
+                                <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
+                                    <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
+                                        class="new-control-input" wire:model.lazy="lunes">
+                                    <span class="new-control-indicator"></span>Lunes
+                                </label>
+                                <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
+                                    <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
+                                        class="new-control-input" wire:model.lazy="martes">
+                                    <span class="new-control-indicator"></span>Martes
+                                </label>
+                                <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
+                                    <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
+                                        class="new-control-input" wire:model.lazy="miercoles">
+                                    <span class="new-control-indicator"></span>Miercoles
+                                </label>
+                                <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
+                                    <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
+                                        class="new-control-input" wire:model.lazy="jueves">
+                                    <span class="new-control-indicator"></span>Jueves
+                                </label>
+                                <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
+                                    <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
+                                        class="new-control-input" wire:model.lazy="viernes">
+                                    <span class="new-control-indicator"></span>Viernes
+                                </label>
+                                <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
+                                    <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
+                                        class="new-control-input" wire:model.lazy="sabado">
+                                    <span class="new-control-indicator"></span>Sabado
+                                </label>
+                                <label class="new-control new-checkbox new-checkbox-rounded checkbox-outline-primary">
+                                    <input @if ($profesor == 'Elegir') disabled @endif type="checkbox"
+                                        class="new-control-input" wire:model.lazy="domingo">
+                                    <span class="new-control-indicator"></span>Domingo
+                                </label>
+                            </div>
                             @error('dias')
                                 <span class="text-danger er">{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
+                @endif
+                <div class="col-sm-12 col-md-3">
+                    <div class="form-group">
+                        <x-label texto="Costo de matrícula" />
+                        <x-input type="number" wire:model.defer="costo_matricula" />
+                        @error('costo_matricula')
+                            <span class="text-danger er">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-3">
+                    <div class="form-group">
+                        <x-label texto="Costo del curso" />
+                        <x-input type="number" wire:model="costo_curso" />
+                        @error('costo_curso')
+                            <span class="text-danger er">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-3">
+                    <div class="form-group">
+                        <x-label texto="Duración meses" />
+                        <x-input type="number" wire:model="duracion_meses" />
+                        @error('duracion_meses')
+                            <span class="text-danger er">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-3">
+                    <div class="form-group">
+                        <x-label texto="Cuota-mes" />
+                        <h6 class="form-control" wire:model="pago_cuota"><strong>{{ $pago_cuota }}</strong></h6>
+                        @error('pago_cuota')
+                            <span class="text-danger er">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-3">
+                    <div class="form-group">
+                        <x-label texto="Dia de cobro" />
+                        <x-input type="number" wire:model="dia_de_cobro" />
+                        @error('dia_de_cobro')
+                            <span class="text-danger er">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="form-group">
+                        <x-label texto="Hrs capacitación" />
+                        <x-input type="number" wire:model.defer="horas_capacitacion" />
+                        @error('horas_capacitacion')
+                            <span class="text-danger er">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6">
+                    <div class="form-group">
+                        <x-label texto="Estado" />
+                        <x-select wire:model.defer='estado'>
+                            <option value="VIGENTE">VIGENTE</option>
+                            <option value="PROXIMO">PROXIMO</option>
+                        </x-select>
+                        @error('estado')
+                            <span class="text-danger er">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
             @endif
-            <div class="col-sm-12 col-md-6">
-                <div class="form-group">
-                    <x-label texto="Estado" />
-                    <x-select wire:model.defer='estado'>
-                        <option value="VIGENTE">VIGENTE</option>
-                        <option value="PROXIMO">PROXIMO</option>
-                    </x-select>
-                    @error('estado')
-                        <span class="text-danger er">{{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
             <div class="col-sm-12 col-md-6">
                 @error('resultado')
                     <span class="text-danger er">{{ $message }}</span>
@@ -198,7 +241,6 @@
         @else
             <x-button wire:click.prevent="Update()" wire:loading.attr="disabled" wire:target="Update"
                 texto="ACTUALIZAR" />
-            <x-button onclick="ConfirmFinalizarCurso()" color="danger" texto="FINALIZAR CURSO" />
         @endif
         <button class="btn" wire:click="resetUI()" data-dismiss="modal"><i class="flaticon-cancel-12"></i>
             CANCELAR</button>

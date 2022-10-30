@@ -81,6 +81,20 @@
                     </div>
                 </div>
             @endif
+            @if ($selected_id != 0)
+                <div class="col-sm-12 col-md-6">
+                    <div class="form-group">
+                        <x-label texto="Estado del estudiante" />
+                        <x-select wire:model.defer='status'>
+                            <option value="ACTIVE">Activo</option>
+                            <option value="LOCKED">Abandonó</option>
+                        </x-select>
+                        @error('status')
+                            <span class="text-danger er">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            @endif
         </div>
     </x-slot>
     <x-slot name="footer">

@@ -17,6 +17,12 @@
             </div>
             <div class="col-sm-12 col-md-6">
                 <div class="form-group">
+                    <x-label texto="Cuota" />
+                    <h6 class="form-control" wire:model="a_pagar"><strong>{{ $a_pagar }}</strong></h6>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="form-group">
                     <x-label texto="Monto" />
                     <x-input type="integer" wire:model.defer="monto" />
                     @error('monto')
@@ -45,6 +51,13 @@
                 </div>
             </div>
             <div class="col-sm-12 col-md-6">
+                <div class="form-group custom-file mt-4">
+                    <input type="file" class="custom-file-input form-control" wire:model="comprobante"
+                        accept="image/x-png,image/gif,image/jpeg">
+                    <label class="custom-file-label">Comprobante {{ $comprobante }}</label>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
                 <div wire:loading wire:target="comprobante"
                     class="alert alert-arrow-right alert-icon-right alert-light-danger mb-4" role="alert">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -55,13 +68,6 @@
                         <line x1="12" y1="16" x2="12.01" y2="16"></line>
                     </svg>
                     <strong>¡Cargando imagen!</strong> Espere un momento.
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-6">
-                <div class="form-group custom-file mt-4">
-                    <input type="file" class="custom-file-input form-control" wire:model="comprobante"
-                        accept="image/x-png,image/gif,image/jpeg">
-                    <label class="custom-file-label">Comprobante {{ $comprobante }}</label>
                 </div>
             </div>
         </div>

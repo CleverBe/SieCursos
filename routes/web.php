@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExportCertificadoController;
 use App\Http\Controllers\ExportCursosPdfController;
 use App\Http\Controllers\ExportPagosController;
 use App\Http\Livewire\AreasCursosController;
@@ -63,6 +64,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reportePagos/pdf/{periodoFiltro}/{reportType}/{dateFrom}/{dateTo}/{cursoFiltro}/{horarioFiltro}', [ExportPagosController::class, 'reporte']);
     Route::get('reportePagos/pdf/{periodoFiltro}/{reportType}/{dateFrom}/{dateTo}/{cursoFiltro}', [ExportPagosController::class, 'reporte']);
     Route::get('reportePagos/pdf/{periodoFiltro}/{reportType}/{dateFrom}/{dateTo}', [ExportPagosController::class, 'reporte']);
+
+    Route::get('certificado/pdf', [ExportCertificadoController::class, 'reporte']);
 
     Route::get('/inicioAulas', InicioAulasController::class)->name('inicioAulas');
 

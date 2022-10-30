@@ -3,11 +3,8 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Livewire\WithPagination;
-use App\Models\User;
-use GuzzleHttp\Promise\Create;
 use Illuminate\Support\Facades\DB;
 
 class RolesController extends Component

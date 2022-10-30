@@ -6,12 +6,15 @@
         <div class="widget widget-chart-one">
             <div class="widget-heading">
                 <h4 class="card-title">
-                    <b>{{ $asignatura }} |
-                        {{ strtoupper(\Carbon\Carbon::parse($periodo)->formatLocalized('%B %Y')) }} |
-                        {{ $dias }} | {{ $horario }} | </b>
+                    <b>{{ $asignatura }} -
+                        {{ strtoupper(\Carbon\Carbon::parse($periodo)->formatLocalized('%B %Y')) }}</b> |
+                    {{ $dias }} | {{ $horario }} |
                 </h4>
                 <ul class="tabs tab-pills">
-                    <x-button wire:click="Agregar()" texto="AGREGAR" />
+                    @if ($estado == 'VIGENTE')
+                        <x-button wire:click="Agregar()" texto="NUEVO ESTUDIANTE" class="mb-1" /> <br>
+                        <x-button onclick="ConfirmFinalizarCurso()" color="danger" texto="FINALIZAR CURSO" />
+                    @endif
                 </ul>
             </div>
             <div class="row">
@@ -38,8 +41,8 @@
                                 <th class="table-th text-withe text-center">A PAGAR</th>
                                 <th class="table-th text-withe text-center">Pagado</th>
                                 <th class="table-th text-withe text-center">Pendiente</th>
-                                <th class="table-th text-withe text-center">Fecha inscripcion</th>
                                 <th class="table-th text-withe text-center">Pagos</th>
+                                <th class="table-th text-withe text-center">Nota final</th>
                                 <th class="table-th text-withe text-center">ACCIONES</th>
                             </tr>
                         </thead>
@@ -49,7 +52,7 @@
                                     <td>
                                         <h6 class="text-center">{{ $loop->iteration }}</h6>
                                     </td>
-                                    <td>
+                                    <td @if ($inscripcion->status == 'LOCKED') title="Abandonó" class="table-danger" @endif>
                                         <h6 class="text-center">{{ $inscripcion->nombreAlumno }}</h6>
                                     </td>
                                     <td>
@@ -62,30 +65,38 @@
                                         <h6 class="text-center">{{ number_format($inscripcion->pagado, 2) }}</h6>
                                     </td>
                                     <td
-                                        @if ($inscripcion->debe == 'SI') class="table-danger"@else class="table-success" @endif>
+                                        @if ($inscripcion->debe == 'SI') class="table-danger" title="Debe" @else class="table-success" title="Al día" @endif>
                                         <h6 class="text-center">{{ number_format($inscripcion->pendiente, 2) }}</h6>
                                     </td>
-                                    <td>
-                                        <h6 class="text-center">
-                                            {{ \Carbon\Carbon::parse($inscripcion->fecha_inscripcion)->format('d/m/Y H:i') }}
-                                        </h6>
-                                    </td>
-                                    <td>
+                                    <td class="text-center">
                                         <x-button wire:click="MostrarPagos({{ $inscripcion->idAlumno_horario }})"
-                                            title="Ver pagos" texto="Ver" />
+                                            title="Ver Pagos" color="info" texto="Ver" />
                                     </td>
                                     <td class="text-center">
-                                        <x-button
-                                            wire:click="Edit({{ $inscripcion->idAlumno }},{{ $inscripcion->idAlumno_horario }})"
-                                            title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </x-button>
-                                        <x-button
-                                            onclick="Confirm('{{ $inscripcion->idAlumno_horario }}','{{ $inscripcion->idAlumno }}',
-                                            '{{ $inscripcion->nombreAlumno }}')"
-                                            title="Eliminar">
-                                            <i class="far fa-trash-alt"></i>
-                                        </x-button>
+                                        <x-button wire:click="EditNotas({{ $inscripcion->idAlumno_horario }})"
+                                            title="Ver Notas" color="info" texto="{{ $inscripcion->nota_final }}" />
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <button id="btndefault" type="button"
+                                                class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false"><svg
+                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                    class="feather feather-chevron-down">
+                                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                                </svg></button>
+                                            <div class="dropdown-menu" aria-labelledby="btndefault">
+                                                <a wire:click="Edit({{ $inscripcion->idAlumno }},{{ $inscripcion->idAlumno_horario }})"
+                                                    class="dropdown-item">Editar</a>
+                                                <a onclick="Confirm('{{ $inscripcion->idAlumno_horario }}','{{ $inscripcion->idAlumno }}',
+                                                    '{{ $inscripcion->nombreAlumno }}')"
+                                                    class="dropdown-item">Eliminar</a>
+                                                <a class="dropdown-item" href="{{ url('certificado/pdf') }}">
+                                                    Imprimir</a>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -105,6 +116,7 @@
     @include('livewire.inscripciones.form')
     @include('livewire.inscripciones.tablaPagos')
     @include('livewire.inscripciones.formPagos')
+    @include('livewire.inscripciones.notas')
 </div>
 
 <script>
@@ -142,21 +154,49 @@
             $('#theModalFormPagos').modal('hide')
             noty(msg, 1)
         });
+
+        window.livewire.on('show-modalNotas', msg => {
+            $('#theModalNotas').modal('show')
+        });
+        window.livewire.on('hide-modalNotas', msg => {
+            $('#theModalNotas').modal('hide')
+            noty(msg, 1)
+        });
     });
 
     function Confirm(alumnohorario, id, name) {
         swal.fire({
             title: 'CONFIRMAR',
             icon: 'warning',
-            text: '¿Confirmar eliminar al alumno ' + name + ' de la materia"?.',
+            text: '¿Confirmar eliminar al alumno ' + name + ' del curso"?.',
             showCancelButton: true,
-            cancelButtonText: 'Cerrar',
-            cancelButtonColor: '#383838',
-            confirmButtonColor: '#3B3F5C',
-            confirmButtonText: 'Aceptar'
+            confirmButtonText: '<i class="flaticon-checked-1"></i> Confirmar',
+            confirmButtonAriaLabel: 'Thumbs up, great!',
+            cancelButtonText: '<i class="flaticon-cancel-circle"></i> Cancelar',
+            cancelButtonAriaLabel: 'Thumbs down',
+            padding: '2em'
         }).then(function(result) {
             if (result.value) {
                 window.livewire.emit('deleteRow', alumnohorario, id)
+                Swal.close()
+            }
+        })
+    }
+
+    function ConfirmFinalizarCurso() {
+        swal.fire({
+            title: 'CONFIRMAR',
+            icon: 'warning',
+            text: '¿Realmente quiere finalizar este curso?',
+            showCancelButton: true,
+            confirmButtonText: '<i class="flaticon-checked-1"></i> Confirmar',
+            confirmButtonAriaLabel: 'Thumbs up, great!',
+            cancelButtonText: '<i class="flaticon-cancel-circle"></i> Cancelar',
+            cancelButtonAriaLabel: 'Thumbs down',
+            padding: '2em'
+        }).then(function(result) {
+            if (result.value) {
+                window.livewire.emit('finalizarCurso')
                 Swal.close()
             }
         })

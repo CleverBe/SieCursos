@@ -43,7 +43,7 @@
                                             <i class="far fa-edit"></i>
                                         </x-button>
                                         <x-button
-                                            onclick="Confirm('{{ $aula->id }}','{{ $aula->codigo }}','{{ $aula->horarios->count() }}')"
+                                            onclick="Confirm('{{ $aula->id }}','{{ $aula->codigo }}','{{ $aula->horarios_count }}')"
                                             title="Eliminar">
                                             <i class="far fa-trash-alt"></i>
                                         </x-button>
@@ -51,7 +51,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4">
+                                    <td colspan="5">
                                         <h5 class="text-center">Sin Resultados</h5>
                                     </td>
                                 </tr>
@@ -106,10 +106,11 @@
             icon: 'warning',
             text: '¿Realmente quiere eliminar el aula ' + '"' + name + '"?.',
             showCancelButton: true,
-            cancelButtonText: 'Cerrar',
-            cancelButtonColor: '#383838',
-            confirmButtonColor: '#3B3F5C',
-            confirmButtonText: 'Aceptar'
+            confirmButtonText: '<i class="flaticon-checked-1"></i> Confirmar',
+            confirmButtonAriaLabel: 'Thumbs up, great!',
+            cancelButtonText: '<i class="flaticon-cancel-circle"></i> Cancelar',
+            cancelButtonAriaLabel: 'Thumbs down',
+            padding: '2em'
         }).then(function(result) {
             if (result.value) {
                 window.livewire.emit('deleteRow', id)

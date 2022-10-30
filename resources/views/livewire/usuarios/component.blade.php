@@ -149,7 +149,6 @@
     function Confirm(id, name, horarios, materiales) {
         if (horarios > 0) {
             swal.fire({
-                icon: 'error',
                 title: 'PRECAUCION',
                 type: 'warning',
                 text: 'No puede eliminar al profesor "' + name + '" porque tiene ' +
@@ -159,7 +158,6 @@
         }
         if (materiales > 0) {
             swal.fire({
-                icon: 'error',
                 title: 'PRECAUCION',
                 type: 'warning',
                 text: 'No puede eliminar al profesor "' + name + '" porque ha subido ' +

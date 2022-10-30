@@ -1,9 +1,8 @@
 <div class="sidebar-wrapper sidebar-theme">
-
     <nav id="compactSidebar">
         <ul class="menu-categories">
             @role('ADMIN')
-                <li class="menu active">
+                <li class="menu {{ request()->routeIs('horarios') || request()->routeIs('usuarios') ? 'active' : '' }}">
                     <a href="#dashboard" data-active="true" class="menu-toggle">
                         <div class="base-menu">
                             <div class="base-icons">

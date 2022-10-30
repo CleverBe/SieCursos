@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class InscripcionesController extends Component
 {
@@ -21,20 +22,22 @@ class InscripcionesController extends Component
     public  $search, $selected_id = 0, $selected_user = 0;
     public  $pageTitle = 'Listado', $componentName = 'Alumnos';
     // modal inscripcion
-    public $nombre, $telefono, $fecha_nacimiento, $cedula, $tutor, $telef_tutor, $email,
+    public $nombre, $telefono, $fecha_nacimiento, $cedula, $tutor, $telef_tutor, $email, $status,
         $fecha_inscripcion;
     // array de pagos del alumno
     public $pagosAlumno = [];
     // modal pagos
-    public $modulo, $monto, $fecha_pago, $mes_pago, $comprobante, $observaciones;
+    public $modulo, $a_pagar, $monto, $fecha_pago, $mes_pago, $comprobante, $observaciones;
 
     public $selected_pago;
 
     public $select_alumno_horario = 0;
 
+    public $estudiante, $primera_nota, $segunda_nota, $nota_final, $selected_nota;
+
     public Horario $horario_obj;
 
-    public $asignatura, $periodo, $horario;
+    public $asignatura, $periodo, $horario, $estado;
 
     public $lunes, $martes, $miercoles, $jueves, $viernes, $sabado, $domingo, $dias;
 
@@ -50,45 +53,44 @@ class InscripcionesController extends Component
         $this->periodo = $this->horario_obj->periodo;
         $this->horario = $this->horario_obj->hora_inicio . '-' . $this->horario_obj->hora_fin;
 
-        $this->lunes =  $this->horario_obj->lunes != 'NO' ? $this->horario_obj->lunes . '-' : '';
-        $this->martes =  $this->horario_obj->martes != 'NO' ? $this->horario_obj->martes . '-' : '';
-        $this->miercoles =  $this->horario_obj->miercoles != 'NO' ? $this->horario_obj->miercoles . '-' : '';
-        $this->jueves =  $this->horario_obj->jueves != 'NO' ? $this->horario_obj->jueves . '-' : '';
-        $this->viernes =  $this->horario_obj->viernes != 'NO' ? $this->horario_obj->viernes . '-' : '';
-        $this->sabado =  $this->horario_obj->sabado != 'NO' ? $this->horario_obj->sabado . '-' : '';
-        $this->domingo =  $this->horario_obj->domingo != 'NO' ? $this->horario_obj->domingo . '-' : '';
+        $this->lunes =  $this->horario_obj->lunes != 'NO' ? $this->horario_obj->lunes . ' ' : '';
+        $this->martes =  $this->horario_obj->martes != 'NO' ? $this->horario_obj->martes . ' ' : '';
+        $this->miercoles =  $this->horario_obj->miercoles != 'NO' ? $this->horario_obj->miercoles . ' ' : '';
+        $this->jueves =  $this->horario_obj->jueves != 'NO' ? $this->horario_obj->jueves . ' ' : '';
+        $this->viernes =  $this->horario_obj->viernes != 'NO' ? $this->horario_obj->viernes . ' ' : '';
+        $this->sabado =  $this->horario_obj->sabado != 'NO' ? $this->horario_obj->sabado . ' ' : '';
+        $this->domingo =  $this->horario_obj->domingo != 'NO' ? $this->horario_obj->domingo . ' ' : '';
 
         $this->dias = $this->lunes . $this->martes . $this->miercoles . $this->jueves . $this->viernes . $this->sabado . $this->domingo;
     }
 
     public function render()
     {
+        $this->estado = $this->horario_obj->estado;
+
         $inscripciones = Alumno::join('users as u', 'alumnos.user_id', 'u.id')
             ->join('alumno_horario as ah', 'ah.alumno_id', 'alumnos.id')
             ->join('horarios as h', 'ah.horario_id', 'h.id')
-            ->join('asignaturas as a', 'h.asignatura_id', 'a.id')
             ->select(
                 'alumnos.id as idAlumno',
                 'alumnos.nombre as nombreAlumno',
                 'alumnos.telefono',
                 'u.email',
                 'u.cedula',
-                'a.costo',
-                'a.matricula',
+                'u.status',
+                'h.costo_curso',
+                'h.costo_matricula',
+                'h.dia_de_cobro',
                 'ah.id as idAlumno_horario',
                 'ah.fecha_inscripcion',
-                'h.dia_de_cobro',
+                'ah.nota_final',
                 DB::raw('0 as a_pagar'),
                 DB::raw('0 as pagado'),
                 DB::raw('0 as pendiente'),
                 DB::raw('0 as debe'),
             )
             ->where('h.id', $this->horario_obj->id)
-            /* ->when($this->search, function ($query) {
-                $query->where(function ($query2) {
-                    $query2->where('codigo', 'like', '%' . $this->search . '%');
-                });
-            }) */
+            ->orderBy('nombreAlumno')
             ->paginate($this->pagination);
 
         $fecha_actual = date("Y-m-d");
@@ -98,7 +100,7 @@ class InscripcionesController extends Component
             $pagado = Pago::where('pagos.alumno_horario_id', $inscripcion->idAlumno_horario)->sum('monto');
             $inscripcion->pagado = $pagado;
             // SUMA COSTO Y MATRICULA DEL CURSO
-            $inscripcion->a_pagar = $inscripcion->costo + $inscripcion->matricula;
+            $inscripcion->a_pagar = $inscripcion->costo_curso + $inscripcion->costo_matricula;
             // CALCULAR CUANTO DEBE ENTRE MATRICULAS Y CUOTAS
             $pendiente = $inscripcion->a_pagar - $pagado;
             $inscripcion->pendiente = $pendiente;
@@ -119,6 +121,20 @@ class InscripcionesController extends Component
         ])
             ->extends('layouts.theme.app')
             ->section('content');
+    }
+
+    public function finalizarCurso()
+    {
+        $this->horario_obj->estado = 'FINALIZADO';
+        $this->horario_obj->save();
+        $alumno_horarios = AlumnoHorario::where('horario_id', $this->horario_obj->id)->get();
+        foreach ($alumno_horarios as $value) {
+            $value->update([
+                'estado' => 'FINALIZADO',
+            ]);
+        }
+        $this->resetUI();
+        $this->emit('item-updated', 'Este curso finalizó');
     }
 
     public function Agregar()
@@ -196,25 +212,25 @@ class InscripcionesController extends Component
             'Primer pago', 'Segundo pago', 'Tercer pago', 'Cuarto pago', 'Quinto pago',
             'Sexto pago', 'Septimo pago', 'Octavo pago', 'Noveno pago', 'Decimo pago'
         ];
+
         $dia_de_cobro = $this->horario_obj->dia_de_cobro;
 
         Pago::create([
             'modulo' => 'Matrícula',
             'monto' => '0',
             'fecha_limite' => $this->periodo . '-' . $dia_de_cobro,
-            'a_pagar' => $this->horario_obj->asignatura->matricula,
+            'a_pagar' => $this->horario_obj->costo_matricula,
             'mes_pago' => $this->periodo,
             'alumno_horario_id' => $AlumnoHorario->id,
         ]);
-        $cantidadCuotas = ($this->horario_obj->asignatura->duracion);
-        $cantidadPagar = ($this->horario_obj->asignatura->costo) / $cantidadCuotas;
-        for ($i = 0; $i < $cantidadCuotas; $i++) {
+
+        for ($i = 0; $i < $this->horario_obj->duracion_meses; $i++) {
             $fechaSumada = date("Y-m", strtotime($this->periodo . "+ " . $i . "month"));
             Pago::create([
                 'modulo' => $modulos[$i],
                 'monto' => '0',
                 'fecha_limite' => $fechaSumada . '-' . $dia_de_cobro,
-                'a_pagar' => $cantidadPagar,
+                'a_pagar' => $this->horario_obj->pago_cuota,
                 'mes_pago' => $fechaSumada,
                 'alumno_horario_id' => $AlumnoHorario->id,
             ]);
@@ -238,6 +254,7 @@ class InscripcionesController extends Component
         $this->tutor = $alumno->tutor;
         $this->telef_tutor = $alumno->telef_tutor;
         $this->email = $alumno->user->email;
+        $this->status = $alumno->user->status;
 
         $this->select_alumno_horario = $alumno_Horario->id;
         $this->fecha_inscripcion = $alumno_Horario->fecha_inscripcion;
@@ -275,6 +292,7 @@ class InscripcionesController extends Component
             'name' => $this->nombre,
             'email' => $this->email,
             'cedula' => $this->cedula,
+            'status' => $this->status,
             'password' => bcrypt($this->cedula)
         ]);
 
@@ -316,7 +334,7 @@ class InscripcionesController extends Component
     public function MostrarPagos(AlumnoHorario $alumno_Horario)
     {
         $this->select_alumno_horario = $alumno_Horario->id;
-
+        $this->estudiante = $alumno_Horario->alumno->nombre;
         $this->tablaPagos();
 
         $this->emit('show-modalTablaPagos', 'show modal!');
@@ -332,6 +350,7 @@ class InscripcionesController extends Component
         $this->resetValidation();
         $this->selected_pago = $pago->id;
         $this->modulo = $pago->modulo;
+        $this->a_pagar = $pago->a_pagar;
         $this->monto = $pago->monto;
         $this->fecha_pago = $pago->fecha_pago;
         $this->observaciones = $pago->observaciones;
@@ -379,7 +398,43 @@ class InscripcionesController extends Component
         return response()->download(public_path('storage/pagos/' . $nombre));
     }
 
-    protected $listeners = ['deleteRow' => 'Destroy'];
+    public function EditNotas(AlumnoHorario $alumno_Horario)
+    {
+        $this->select_alumno_horario = $alumno_Horario->id;
+
+        $this->estudiante = $alumno_Horario->alumno->nombre;
+        $this->primera_nota = $alumno_Horario->primera_nota;
+        $this->segunda_nota = $alumno_Horario->segunda_nota;
+        $this->nota_final = $alumno_Horario->nota_final;
+
+        $this->emit('show-modalNotas', 'show modal!');
+    }
+
+    public function UpdateNotas()
+    {
+        $rules = [
+            'primera_nota' => 'required|integer',
+            'segunda_nota' => 'required|integer',
+        ];
+        $messages = [
+            'primera_nota.required' => 'La nota es requerida.',
+            'primera_nota.integer' => 'La nota debe ser un número.',
+            'segunda_nota.required' => 'La nota es requerida.',
+            'segunda_nota.integer' => 'La nota debe ser un número.',
+        ];
+        $this->validate($rules, $messages);
+
+        $alumnoHorario = AlumnoHorario::find($this->select_alumno_horario);
+        $alumnoHorario->update([
+            'primera_nota' => $this->primera_nota,
+            'segunda_nota' => $this->segunda_nota,
+            'nota_final' => ($this->primera_nota + $this->segunda_nota) / 2,
+        ]);
+        $this->resetUI();
+        $this->emit('hide-modalNotas', 'Se actualizó correctamente');
+    }
+
+    protected $listeners = ['deleteRow' => 'Destroy', 'finalizarCurso'];
 
     public function resetUI()
     {
@@ -391,7 +446,7 @@ class InscripcionesController extends Component
             'fecha_inscripcion'
         ]);
         $this->reset([
-            'monto', 'fecha_pago', 'observaciones', 'comprobante',
+            'a_pagar', 'monto', 'fecha_pago', 'observaciones', 'comprobante',
         ]);
         $this->resetValidation();
     }

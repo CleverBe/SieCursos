@@ -11,8 +11,9 @@ class Horario extends Model
 
     protected $fillable = [
         'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo', 'modalidad',
-        'periodo', 'hora_inicio', 'hora_fin', 'fecha_inicio', 'fecha_fin', 'dia_de_cobro', 'estado',
-        'aula_id', 'professor_id', 'asignatura_id'
+        'periodo', 'hora_inicio', 'hora_fin', 'fecha_inicio', 'fecha_fin', 'dia_de_cobro',
+        'horas_capacitacion', 'costo_curso', 'costo_matricula', 'duracion_meses', 'pago_cuota',
+        'estado', 'aula_id', 'professor_id', 'asignatura_id'
     ];
     // relación de 1 a 1 con tabla Aula
     public function aula()
@@ -38,5 +39,10 @@ class Horario extends Model
     public function materials()
     {
         return $this->morphMany(Material::class, 'materialable');
+    }
+    // relación de 1 a 1 con tabla AlumnoHorario
+    public function alumnohorario()
+    {
+        return $this->hasOne(AlumnoHorario::class);
     }
 }

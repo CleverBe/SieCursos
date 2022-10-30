@@ -1,7 +1,7 @@
 <x-modal id="theModalTablaPagos" size="xl">
     <x-slot name="head">
         <h5 class="modal-title text-white">
-            <b>Listado de pagos del estudiante
+            <b>Listado de pagos de {{ $estudiante }}
         </h5>
         <button class="close" data-dismiss="modal" type="button" aria-label="Close">
             <span class="text-white">&times;</span>
@@ -11,7 +11,7 @@
     <x-slot name="body">
         <div class="widget-content">
             <div class="table-responsive">
-                <table class="table table-unbordered table-hover">
+                <table class="table table-unbordered">
                     <thead>
                         <tr>
                             <th class="table-th text-withe text-center">Modulo</th>
@@ -26,7 +26,8 @@
                     </thead>
                     <tbody>
                         @forelse ($pagosAlumno as $pago)
-                            <tr @if ($pago->monto < $pago->a_pagar) class="table-danger"@else class="table-info" @endif>
+                            <tr
+                                @if ($pago->monto < $pago->a_pagar) class="table-danger" @else class="table-success" @endif>
                                 <td class="text-center">
                                     <h6 class="text-center">{{ $pago->modulo }}</h6>
                                 </td>

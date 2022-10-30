@@ -60,7 +60,6 @@
                                 <th class="table-th text-withe text-center">#</th>
                                 <th class="table-th text-withe text-center">CURSO</th>
                                 <th class="table-th text-withe text-center">AULA</th>
-                                <th class="table-th text-withe text-center">MODALIDAD</th>
                                 <th class="table-th text-withe text-center">PROFESOR</th>
                                 <th class="table-th text-withe text-center">ESTUDIANTES</th>
                                 <th class="table-th text-withe text-center">DIAS DE CLASES</th>
@@ -85,15 +84,12 @@
                                         <h6 class="text-center">{{ $horario->aula->codigo }}</h6>
                                     </td>
                                     <td>
-                                        <h6 class="text-center">{{ $horario->modalidad }}</h6>
-                                    </td>
-                                    <td>
                                         <h6 class="text-center">{{ $horario->professor->nombre }}</h6>
                                     </td>
                                     <td>
                                         <h6 class="text-center">
                                             <x-button wire:click="MostrarEstudiantes({{ $horario->id }})"
-                                                title="Ver estudiantes" texto="{{ $horario->cantidadAlumnos }}" />
+                                                title="Ver estudiantes" texto="{{ $horario->alumnohorario_count }}" />
                                         </h6>
                                     </td>
                                     <td>
@@ -135,20 +131,30 @@
                                     </td>
                                     @if ($filtroEstado != 'FINALIZADO')
                                         <td class="text-center">
-                                            <a href="{{ url('inscripciones' . '/' . $horario->id) }}"
-                                                class="btn btn-secondary" title="Ingresar">
-                                                Ingresar
-                                            </a>
-                                            <x-button wire:click="Edit({{ $horario->id }})" title="Editar">
-                                                <i class="far fa-edit"></i>
-                                            </x-button>
-                                            <x-button
-                                                onclick="Confirm('{{ $horario->id }}','{{ $horario->asignatura->nombre }}',
-                                            '{{ $horario->aula->codigo }}','{{ $horario->hora_inicio }}','{{ $horario->hora_fin }}',
-                                            '{{ $horario->alumnos->count() }}','{{ $horario->materials->count() }}')"
-                                                title="Eliminar">
-                                                <i class="far fa-trash-alt"></i>
-                                            </x-button>
+                                            <div class="btn-group">
+                                                <a href="{{ url('inscripciones' . '/' . $horario->id) }}"
+                                                    class="btn btn-secondary" title="Ingresar">
+                                                    Ingresar
+                                                </a>
+                                                <button type="button"
+                                                    class="btn btn-primary dropdown-toggle"
+                                                    data-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg"
+                                                        width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round" class="feather feather-chevron-down">
+                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                    </svg>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item"
+                                                        wire:click="Edit({{ $horario->id }})">Editar</a>
+                                                    <a class="dropdown-item"
+                                                        onclick="Confirm('{{ $horario->id }}','{{ $horario->asignatura->nombre }}',
+                                                        '{{ $horario->aula->codigo }}','{{ $horario->hora_inicio }}','{{ $horario->hora_fin }}',
+                                                        '{{ $horario->alumnos_count }}','{{ $horario->materials_count }}')">Eliminar</a>
+                                                </div>
+                                            </div>
                                         </td>
                                     @endif
                                 </tr>
@@ -224,31 +230,14 @@
             text: '¿Realmente quiere eliminar el curso ' + '"' + name + '" que se encuentra en el aula ' +
                 codigo + ' en el horario ' + hora_inicio + ' a ' + hora_fin + '?',
             showCancelButton: true,
-            cancelButtonText: 'Cerrar',
-            cancelButtonColor: '#383838',
-            confirmButtonColor: '#3B3F5C',
-            confirmButtonText: 'Aceptar'
+            confirmButtonText: '<i class="flaticon-checked-1"></i> Confirmar',
+            confirmButtonAriaLabel: 'Thumbs up, great!',
+            cancelButtonText: '<i class="flaticon-cancel-circle"></i> Cancelar',
+            cancelButtonAriaLabel: 'Thumbs down',
+            padding: '2em'
         }).then(function(result) {
             if (result.value) {
                 window.livewire.emit('deleteRow', id)
-                Swal.close()
-            }
-        })
-    }
-
-    function ConfirmFinalizarCurso() {
-        swal.fire({
-            title: 'CONFIRMAR',
-            icon: 'warning',
-            text: '¿Realmente quiere finalizar este curso?',
-            showCancelButton: true,
-            cancelButtonText: 'Cerrar',
-            cancelButtonColor: '#383838',
-            confirmButtonColor: '#3B3F5C',
-            confirmButtonText: 'Aceptar'
-        }).then(function(result) {
-            if (result.value) {
-                window.livewire.emit('finalizarCurso')
                 Swal.close()
             }
         })

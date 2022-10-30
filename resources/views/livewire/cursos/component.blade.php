@@ -78,17 +78,19 @@
                                         <h6 class="text-center">{{ $asignatura->estado }}</h6>
                                     </td>
                                     <td class="text-center">
-                                        <span>
-                                            <img src="{{ asset('storage/asignaturas/' . $asignatura->image) }}"
-                                                alt="imagen de ejemplo" height="120" width="150" class="rounded">
-                                        </span>
+                                        <a href="javascript:void(0)" class="btn btn-dark" data-toggle="modal"
+                                            data-target="#sliderModal"><span>
+                                                <img src="{{ asset('storage/asignaturas/' . $asignatura->image) }}"
+                                                    alt="imagen de ejemplo" height="120" width="150"
+                                                    class="rounded">
+                                            </span></a>
                                     </td>
                                     <td class="text-center">
                                         <x-button wire:click="Edit({{ $asignatura->id }})" title="Editar">
                                             <i class="far fa-edit"></i>
                                         </x-button>
                                         <x-button
-                                            onclick="Confirm('{{ $asignatura->id }}','{{ $asignatura->nombre }}','{{ $asignatura->horarios->count() }}')"
+                                            onclick="Confirm('{{ $asignatura->id }}','{{ $asignatura->nombre }}','{{ $asignatura->horarios_count }}')"
                                             title="Eliminar">
                                             <i class="far fa-trash-alt"></i>
                                         </x-button>
@@ -109,6 +111,7 @@
         </div>
     </div>
     @include('livewire.cursos.form')
+    @include('livewire.cursos.imagenModal')
 </div>
 
 <script>
@@ -151,10 +154,11 @@
             icon: 'warning',
             text: '¿Realmente quiere eliminar el curso ' + '"' + name + '"?.',
             showCancelButton: true,
-            cancelButtonText: 'Cerrar',
-            cancelButtonColor: '#383838',
-            confirmButtonColor: '#3B3F5C',
-            confirmButtonText: 'Aceptar'
+            confirmButtonText: '<i class="flaticon-checked-1"></i> Confirmar',
+            confirmButtonAriaLabel: 'Thumbs up, great!',
+            cancelButtonText: '<i class="flaticon-cancel-circle"></i> Cancelar',
+            cancelButtonAriaLabel: 'Thumbs down',
+            padding: '2em'
         }).then(function(result) {
             if (result.value) {
                 window.livewire.emit('deleteRow', id)

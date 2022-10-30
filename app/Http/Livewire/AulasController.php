@@ -26,9 +26,10 @@ class AulasController extends Component
 
     public function render()
     {
-        $aulas = Aula::when($this->search, function ($query) {
-            $query->where('codigo', 'like', '%' . $this->search . '%');
-        })->paginate($this->pagination);
+        $aulas = Aula::withCount('horarios')
+            ->when($this->search, function ($query) {
+                $query->where('codigo', 'like', '%' . $this->search . '%');
+            })->paginate($this->pagination);
 
         return view('livewire.aulas.component', [
             'aulas' => $aulas,

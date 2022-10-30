@@ -18,6 +18,9 @@
                             <th class="table-th text-withe text-center">Estudiante</th>
                             <th class="table-th text-withe text-center">Teléfono</th>
                             <th class="table-th text-withe text-center">Fecha de inscripción</th>
+                            <th class="table-th text-withe text-center">Primera nota</th>
+                            <th class="table-th text-withe text-center">Segunda nota</th>
+                            <th class="table-th text-withe text-center">Nota final</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,6 +39,15 @@
                                     <h6 class="text-center">
                                         {{ \Carbon\Carbon::parse($alumno_horario->fecha_inscripcion)->format('d/m/Y H:i') }}
                                     </h6>
+                                </td>
+                                <td class="text-center">
+                                    <h6 class="text-center">{{ $alumno_horario->primera_nota }}</h6>
+                                </td>
+                                <td class="text-center">
+                                    <h6 class="text-center">{{ $alumno_horario->segunda_nota }}</h6>
+                                </td>
+                                <td class="text-center">
+                                    <h6 class="text-center">{{ $alumno_horario->nota_final }}</h6>
                                 </td>
                             </tr>
                         @empty

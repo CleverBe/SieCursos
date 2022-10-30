@@ -179,13 +179,13 @@ class UsuariosController extends Component
         ];
         $this->validate($rules, $messages);
 
-        if ($this->profile == 'PROFESSOR') {
+        $usuario = User::find($this->selected_user);
+
+        if ($usuario->profile == 'PROFESSOR') {
             $tipoUsuario = Professor::find($this->selected_id);
         } else {
             $tipoUsuario = Admin::find($this->selected_id);
         }
-
-        $usuario = User::find($this->selected_user);
 
         if ($this->password != null) {
             $usuario->update([

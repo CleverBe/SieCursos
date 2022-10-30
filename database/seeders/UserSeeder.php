@@ -108,18 +108,12 @@ class UserSeeder extends Seeder
         Asignatura::create([
             'nombre' => 'Reparación de celulares',
             'descripcion' => 'curso práctico desde 0',
-            'duracion' => 3,
-            'matricula' => 100,
-            'costo' => 1200,
             'image' => 'noimage.jpg',
             'area_id' => 2,
         ]);
         Asignatura::create([
             'nombre' => 'Photoshop desde 0',
             'descripcion' => 'curso práctico desde 0',
-            'duracion' => 3,
-            'matricula' => 100,
-            'costo' => 1000,
             'image' => 'noimage.jpg',
             'area_id' => 1,
         ]);

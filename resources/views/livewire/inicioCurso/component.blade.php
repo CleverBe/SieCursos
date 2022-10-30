@@ -196,10 +196,11 @@
             icon: 'warning',
             text: '¿Realmente quiere eliminar el archivo ' + '"' + name + '"?.',
             showCancelButton: true,
-            cancelButtonText: 'Cerrar',
-            cancelButtonColor: '#383838',
-            confirmButtonColor: '#3B3F5C',
-            confirmButtonText: 'Aceptar'
+            confirmButtonText: '<i class="flaticon-checked-1"></i> Confirmar',
+            confirmButtonAriaLabel: 'Thumbs up, great!',
+            cancelButtonText: '<i class="flaticon-cancel-circle"></i> Cancelar',
+            cancelButtonAriaLabel: 'Thumbs down',
+            padding: '2em'
         }).then(function(result) {
             if (result.value) {
                 window.livewire.emit('deleteRow', id)

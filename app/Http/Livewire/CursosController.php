@@ -33,7 +33,7 @@ class CursosController extends Component
 
     public function render()
     {
-        $asignaturas = Asignatura::with('area')
+        $asignaturas = Asignatura::with('area')->withCount('horarios')
             ->when($this->search, function ($query) {
                 $query->where('nombre', 'like', '%' . $this->search . '%');
             })

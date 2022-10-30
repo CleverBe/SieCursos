@@ -17,9 +17,6 @@ class CreateAsignaturasTable extends Migration
             $table->id();
             $table->string('nombre', 255);
             $table->string('descripcion', 255);
-            $table->string('duracion', 255);
-            $table->decimal('costo', 10, 2);
-            $table->integer('matricula');
             $table->enum('estado', ['ACTIVO', 'INACTIVO', 'PROXIMO']);
             $table->string('image', 255)->nullable();
             $table->unsignedBigInteger('area_id');

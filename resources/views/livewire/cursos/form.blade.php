@@ -18,15 +18,6 @@
             </div>
             <div class="col-sm-12 col-md-6">
                 <div class="form-group">
-                    <x-label texto="Descripcion" />
-                    <x-input type="text" wire:model.defer="descripcion" maxlenght="25" />
-                    @error('descripcion')
-                        <span class="text-danger er">{{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-6">
-                <div class="form-group">
                     <x-label texto="Duracion en meses" />
                     <x-input type="number" wire:model.defer="duracion" />
                     @error('duracion')
@@ -88,10 +79,21 @@
             </div>
             @if ($image)
                 <div class="col-sm-12 col-md-12 text-center">
-                    <h3>Visualizacion previa</h3>
-                    <img src="{{ $image->temporaryURL() }}" height="200" width="200" class="img-fluid">
+                    <div class="form-group">
+                        <h3>Visualización previa</h3>
+                        <img src="{{ $image->temporaryURL() }}" height="200" width="200" class="img-fluid">
+                    </div>
                 </div>
             @endif
+            <div class="col-sm-12 col-md-12">
+                <div class="input-group">
+                    <span class="input-group-text">Descripción</span>
+                    <x-textarea wire:model.defer="descripcion" rows="3" />
+                    @error('descripcion')
+                        <span class="text-danger er">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
         </div>
     </x-slot>
     <x-slot name="footer">

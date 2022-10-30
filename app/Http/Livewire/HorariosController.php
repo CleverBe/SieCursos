@@ -20,8 +20,9 @@ class HorariosController extends Component
 
     public $asignatura = 'Elegir', $aula = 'Elegir', $modalidad = 'PRESENCIAL', $profesor = 'Elegir',
         $periodo, $dias = 'No', $lunes = false, $martes = false, $miercoles = false, $jueves = false,
-        $viernes = false, $sabado = false, $domingo = false, $hora_inicio, $hora_fin, $fecha_inicio,
-        $fecha_fin, $estado = 'VIGENTE', $dia_de_cobro;
+        $viernes = false, $sabado = false, $domingo = false,
+        $hora_inicio, $hora_fin, $fecha_inicio, $fecha_fin, $estado = 'VIGENTE', $dia_de_cobro,
+        $horas_capacitacion, $costo_curso, $costo_matricula = 100;
 
     public $respuesta = 'Si', $resultado = 'Si';
 
@@ -34,6 +35,8 @@ class HorariosController extends Component
     private $pagination = 10;
 
     protected $paginationTheme = 'bootstrap';
+
+    public $duracion_meses, $pago_cuota;
 
     public function mount()
     {
@@ -48,6 +51,7 @@ class HorariosController extends Component
     public function render()
     {
         $horarios = Horario::with('asignatura', 'aula', 'professor')
+            ->withCount('alumnohorario')->withCount('alumnos')->withCount('materials')
             ->when($this->search, function ($query) {
                 $query->where(function ($query2) {
                     $query2->whereRelation('professor', 'nombre', 'like', '%' . $this->search . '%');
@@ -60,11 +64,13 @@ class HorariosController extends Component
                 $query->where('estado', $this->filtroEstado);
             })
             ->where('periodo', $this->periodoFiltro)
-            ->addSelect([
-                'cantidadAlumnos' => AlumnoHorario::selectRaw('COUNT(*)')
-                    ->whereColumn('alumno_horario.horario_id', 'horarios.id')
-            ])
             ->paginate($this->pagination);
+
+        if ($this->costo_curso && $this->duracion_meses) {
+            $this->pago_cuota = $this->costo_curso / $this->duracion_meses;
+        } else {
+            $this->pago_cuota = 0;
+        }
 
         return view('livewire.horarios.component', [
             'horarios' => $horarios,
@@ -274,6 +280,7 @@ class HorariosController extends Component
         }
 
         $rules = [
+            'pago_cuota' => 'integer',
             'asignatura' => 'not_in:Elegir',
             'aula' => 'not_in:Elegir',
             'profesor' => 'not_in:Elegir',
@@ -284,10 +291,15 @@ class HorariosController extends Component
             'fecha_inicio' => 'required',
             'fecha_fin' => 'required|after_or_equal:fecha_inicio',
             'dia_de_cobro' => 'required',
+            'horas_capacitacion' => 'required',
+            'costo_curso' => 'required',
+            'costo_matricula' => 'required',
+            'duracion_meses' => 'required',
             'resultado' => 'not_in:No',
             'respuesta' => 'not_in:No',
         ];
         $messages = [
+            'pago_cuota.integer' => 'El pago de cuotas no debe tener decimales',
             'asignatura.not_in' => 'Seleccione un curso distinto a Elegir.',
             'aula.not_in' => 'Seleccione un aula distinta a Elegir.',
             'profesor.not_in' => 'Seleccione un profesor distinto a Elegir.',
@@ -300,6 +312,10 @@ class HorariosController extends Component
             'fecha_fin.required' => 'La fecha de finalización es requerido.',
             'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser posterior a la fecha inicial.',
             'dia_de_cobro.required' => 'El día de cobro es requerido.',
+            'horas_capacitacion.required' => 'Las horas de capacitación son requeridas.',
+            'costo_curso.required' => 'El costo del curso es requerido.',
+            'costo_matricula.required' => 'El costo de la matricula es requerido.',
+            'duracion_meses.required' => 'La duración del curso es requerida.',
             'resultado.not_in' => 'El profesor seleccionado está registrado en otro curso en uno de los dias selecionados entre los horarios seleccionados.',
             'respuesta.not_in' => 'El aula seleccionada está ocupado en uno de los dias selecionados.',
         ];
@@ -356,6 +372,11 @@ class HorariosController extends Component
             'fecha_inicio' => $this->fecha_inicio,
             'fecha_fin' => $this->fecha_fin,
             'dia_de_cobro' => $this->dia_de_cobro,
+            'horas_capacitacion' => $this->horas_capacitacion,
+            'costo_curso' => $this->costo_curso,
+            'costo_matricula' => $this->costo_matricula,
+            'duracion_meses' => $this->duracion_meses,
+            'pago_cuota' => $this->pago_cuota,
             'estado' => $this->estado,
             'asignatura_id' => $this->asignatura,
             'aula_id' => $this->aula,
@@ -420,6 +441,11 @@ class HorariosController extends Component
         $this->fecha_inicio = $horario->fecha_inicio;
         $this->fecha_fin = $horario->fecha_fin;
         $this->dia_de_cobro = $horario->dia_de_cobro;
+        $this->horas_capacitacion = $horario->horas_capacitacion;
+        $this->costo_curso = $horario->costo_curso;
+        $this->costo_matricula = $horario->costo_matricula;
+        $this->duracion_meses = $horario->duracion_meses;
+        $this->pago_cuota = $horario->pago_cuota;
         $this->asignatura = $horario->asignatura_id;
         $this->aula = $horario->aula_id;
         $this->profesor = $horario->professor_id;
@@ -441,6 +467,7 @@ class HorariosController extends Component
             'fecha_inicio' => 'required',
             'fecha_fin' => 'required|after_or_equal:fecha_inicio',
             'dia_de_cobro' => 'required',
+            'horas_capacitacion' => 'required',
             'dias' => 'not_in:No',
         ];
         $messages = [
@@ -449,6 +476,7 @@ class HorariosController extends Component
             'fecha_inicio.required' => 'La fecha de inicio es requerido',
             'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser posterior a la fecha inicial.',
             'dia_de_cobro.required' => 'El día de cobro es requerido.',
+            'horas_capacitacion.required' => 'Las horas de capacitación son requeridas.',
             'dias.not_in' => 'Seleccione los dias de clases.',
         ];
         $this->validate($rules, $messages);
@@ -505,11 +533,17 @@ class HorariosController extends Component
             'fecha_inicio' => $this->fecha_inicio,
             'fecha_fin' => $this->fecha_fin,
             'dia_de_cobro' => $this->dia_de_cobro,
+            'horas_capacitacion' => $this->horas_capacitacion,
+            'costo_curso' => $this->costo_curso,
+            'costo_matricula' => $this->costo_matricula,
+            'duracion_meses' => $this->duracion_meses,
+            'pago_cuota' => $this->pago_cuota,
             'asignatura_id' => $this->asignatura,
             'aula_id' => $this->aula,
             'professor_id' => $this->profesor,
             'estado' => $this->estado,
         ]);
+
         // actualizar la fecha limite de pago de todos los pagos de los estudiantes del horario
         $pagosHorario = Pago::join('alumno_horario as ah', 'pagos.alumno_horario_id', 'ah.id')
             ->select('pagos.id')
@@ -531,22 +565,6 @@ class HorariosController extends Component
         $this->emit('item-deleted', 'Horario eliminado');
     }
 
-    public function finalizarCurso()
-    {
-        $horario = Horario::find($this->selected_id);
-        $horario->update([
-            'estado' => 'FINALIZADO',
-        ]);
-        $alumno_horarios = AlumnoHorario::where('horario_id', $this->selected_id)->get();
-        foreach ($alumno_horarios as $value) {
-            $value->update([
-                'estado' => 'FINALIZADO',
-            ]);
-        }
-        $this->resetUI();
-        $this->emit('item-updated', 'El horario finalizó');
-    }
-
     public function MostrarEstudiantes(Horario $horario)
     {
         $this->select_horario = $horario->id;
@@ -555,7 +573,7 @@ class HorariosController extends Component
         $this->emit('show-modalEstudiantes', 'show modal!');
     }
 
-    protected $listeners = ['deleteRow' => 'Destroy', 'finalizarCurso'];
+    protected $listeners = ['deleteRow' => 'Destroy'];
 
     public function resetUI()
     {
