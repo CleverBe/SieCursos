@@ -34,7 +34,7 @@ class CreateHorariosTable extends Migration
             $table->integer('costo_matricula');
             $table->integer('duracion_meses');
             $table->integer('pago_cuota');
-            $table->enum('estado', ['VIGENTE', 'FINALIZADO', 'PROXIMO'])->default('VIGENTE');
+            $table->enum('estado', ['VIGENTE', 'FINALIZADO'])->default('VIGENTE');
             $table->unsignedBigInteger('aula_id');
             $table->foreign('aula_id')->references('id')->on('aulas');
             $table->unsignedBigInteger('professor_id');

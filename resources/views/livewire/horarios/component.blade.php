@@ -45,7 +45,6 @@
                     <div class="form-group">
                         <select wire:model="filtroEstado" class="form-control">
                             <option value="VIGENTE">VIGENTES</option>
-                            <option value="PROXIMO">PROXIMOS</option>
                             <option value="FINALIZADO">FINALIZADOS</option>
                         </select>
                     </div>
@@ -62,13 +61,12 @@
                                 <th class="table-th text-withe text-center">AULA</th>
                                 <th class="table-th text-withe text-center">PROFESOR</th>
                                 <th class="table-th text-withe text-center">ESTUDIANTES</th>
+                                <th class="table-th text-withe text-center">DEBEN</th>
                                 <th class="table-th text-withe text-center">DIAS DE CLASES</th>
                                 <th class="table-th text-withe text-center">HORARIO</th>
                                 <th class="table-th text-withe text-center">FECHA INICIO</th>
                                 <th class="table-th text-withe text-center">FECHA FIN</th>
-                                @if ($filtroEstado != 'FINALIZADO')
-                                    <th class="table-th text-withe text-center">ACCIONES</th>
-                                @endif
+                                <th class="table-th text-withe text-center">ACCIONES</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -89,8 +87,13 @@
                                     <td>
                                         <h6 class="text-center">
                                             <x-button wire:click="MostrarEstudiantes({{ $horario->id }})"
-                                                title="Ver estudiantes" texto="{{ $horario->alumnohorario_count }}" />
+                                                title="Ver estudiantes"
+                                                texto="{{ $horario->alumnohorario->count() }}" />
                                         </h6>
+                                    </td>
+                                    <td
+                                        @if ($horario->deudores == 'SI') class="table-danger" title="Debe" @else class="table-success" title="Al día" @endif>
+                                        <h6 class="text-center">{{ $horario->deudores }}</h6>
                                     </td>
                                     <td>
                                         <h6 class="text-center">
@@ -129,15 +132,14 @@
                                         <h6 class="text-center">
                                             {{ \Carbon\Carbon::parse($horario->fecha_fin)->format('d/m/Y') }}</h6>
                                     </td>
-                                    @if ($filtroEstado != 'FINALIZADO')
-                                        <td class="text-center">
-                                            <div class="btn-group">
-                                                <a href="{{ url('inscripciones' . '/' . $horario->id) }}"
-                                                    class="btn btn-secondary" title="Ingresar">
-                                                    Ingresar
-                                                </a>
-                                                <button type="button"
-                                                    class="btn btn-primary dropdown-toggle"
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a href="{{ url('inscripciones' . '/' . $horario->id) }}"
+                                                class="btn btn-secondary" title="Ingresar">
+                                                Ingresar
+                                            </a>
+                                            @if ($filtroEstado != 'FINALIZADO')
+                                                <button type="button" class="btn btn-primary dropdown-toggle"
                                                     data-toggle="dropdown" aria-haspopup="true"
                                                     aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg"
                                                         width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -152,11 +154,11 @@
                                                     <a class="dropdown-item"
                                                         onclick="Confirm('{{ $horario->id }}','{{ $horario->asignatura->nombre }}',
                                                         '{{ $horario->aula->codigo }}','{{ $horario->hora_inicio }}','{{ $horario->hora_fin }}',
-                                                        '{{ $horario->alumnos_count }}','{{ $horario->materials_count }}')">Eliminar</a>
+                                                        '{{ $horario->alumnos->count() }}','{{ $horario->materials->count() }}')">Eliminar</a>
                                                 </div>
-                                            </div>
-                                        </td>
-                                    @endif
+                                            @endif
+                                        </div>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>

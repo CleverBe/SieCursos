@@ -25,4 +25,9 @@ class AlumnoHorario extends Pivot
     {
         return $this->belongsTo(Alumno::class);
     }
+    // relacion de 1 a muchos con la tabla pagos
+    public function pagos()
+    {
+        return $this->hasMany(Pago::class);
+    }
 }

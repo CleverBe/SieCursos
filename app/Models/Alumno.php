@@ -34,7 +34,7 @@ class Alumno extends Model
 
     public function alumnohorario()
     {
-        return $this->hasOne(AlumnoHorario::class);
+        return $this->hasMany(AlumnoHorario::class);
     }
 
     public function user()

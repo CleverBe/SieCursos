@@ -14,6 +14,7 @@
                     @if ($estado == 'VIGENTE')
                         <x-button wire:click="Agregar()" texto="NUEVO ESTUDIANTE" class="mb-1" /> <br>
                         <x-button onclick="ConfirmFinalizarCurso()" color="danger" texto="FINALIZAR CURSO" />
+                        <x-button wire:click="generarCertificado" texto="Certificado" class="mb-1" /> <br>
                     @endif
                 </ul>
             </div>

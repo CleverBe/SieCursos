@@ -40,9 +40,9 @@ class Horario extends Model
     {
         return $this->morphMany(Material::class, 'materialable');
     }
-    // relación de 1 a 1 con tabla AlumnoHorario
+    // relación de 1 a muchos con tabla AlumnoHorario
     public function alumnohorario()
     {
-        return $this->hasOne(AlumnoHorario::class);
+        return $this->hasMany(AlumnoHorario::class);
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Aula;
 use App\Models\Horario;
 use App\Models\Pago;
 use App\Models\Professor;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -18,17 +19,17 @@ class HorariosController extends Component
     public  $search, $selected_id = 0;
     public  $pageTitle = 'Listado', $componentName = 'Horarios';
 
-    public $asignatura = 'Elegir', $aula = 'Elegir', $modalidad = 'PRESENCIAL', $profesor = 'Elegir',
-        $periodo, $dias = 'No', $lunes = false, $martes = false, $miercoles = false, $jueves = false,
+    public $asignatura_id = 'Elegir', $aula_id = 'Elegir', $modalidad = 'PRESENCIAL', $professor_id = 'Elegir',
+        $periodo, $dias_seleccionado = 'No', $lunes = false, $martes = false, $miercoles = false, $jueves = false,
         $viernes = false, $sabado = false, $domingo = false,
-        $hora_inicio, $hora_fin, $fecha_inicio, $fecha_fin, $estado = 'VIGENTE', $dia_de_cobro,
+        $hora_inicio, $hora_fin, $fecha_inicio, $fecha_fin, $dia_de_cobro,
         $horas_capacitacion, $costo_curso, $costo_matricula = 100;
 
-    public $respuesta = 'Si', $resultado = 'Si';
+    public $horario_libre = 'Si', $profesor_libre = 'Si';
 
     public $filtroEstado = 'VIGENTE', $cursoFiltro, $periodoFiltro;
 
-    public $listadoEstudiantes = [], $select_horario = 0;
+    public $listadoEstudiantes = [];
 
     public $asignaturas, $aulas, $profesores;
 
@@ -40,8 +41,6 @@ class HorariosController extends Component
 
     public function mount()
     {
-        $this->periodoFiltro = date('Y-m', time());
-
         $this->asignaturas = Asignatura::where('estado', 'ACTIVO')->get();
         $this->aulas = Aula::where('estado', 'ACTIVO')->get();
         $this->profesores = Professor::with('user')
@@ -50,8 +49,18 @@ class HorariosController extends Component
 
     public function render()
     {
-        $horarios = Horario::with('asignatura', 'aula', 'professor')
-            ->withCount('alumnohorario')->withCount('alumnos')->withCount('materials')
+        $periodoActual = Horario::where('estado', 'VIGENTE')->orderBy('periodo')->get()->first();
+        if ($periodoActual) {
+            $this->periodoFiltro = $periodoActual->periodo;
+        } else {
+            $this->periodoFiltro = date('Y-m', time());
+        }
+
+        $horarios = Horario::with('asignatura', 'aula', 'professor', 'alumnohorario', 'alumnos', 'materials')
+            ->select(
+                'horarios.*',
+                DB::raw('0 as deudores'),
+            )
             ->when($this->search, function ($query) {
                 $query->where(function ($query2) {
                     $query2->whereRelation('professor', 'nombre', 'like', '%' . $this->search . '%');
@@ -72,6 +81,27 @@ class HorariosController extends Component
             $this->pago_cuota = 0;
         }
 
+        $fecha_actual = date("Y-m-d");
+
+        foreach ($horarios as $value) {
+
+            foreach ($value->alumnohorario as $alumnoHor) {
+                $pagosA = Pago::where('alumno_horario_id', $alumnoHor->id)
+                    ->where('fecha_limite', '<', $fecha_actual)
+                    ->whereRaw('monto < a_pagar')
+                    ->get();
+                if (count($pagosA) > 0) {
+                    $value->deudores = 'SI';
+                } else {
+                    $value->deudores = 'NO';
+                }
+            }
+            if (count($value->alumnohorario) == 0) {
+                $value->deudores = 'NO';
+            }
+        }
+
+
         return view('livewire.horarios.component', [
             'horarios' => $horarios,
         ])
@@ -87,239 +117,269 @@ class HorariosController extends Component
         }
     }
 
-    public function Store()
+    public function validarDiasSeleccionados()
     {
+        // validacion de seleccionar al menos 1 dia
         if ($this->lunes || $this->martes || $this->miercoles || $this->jueves || $this->viernes || $this->sabado || $this->domingo) {
-            $this->dias = 'Si';
+            $this->dias_seleccionado = 'Si';
         } else {
-            $this->dias = 'No';
+            $this->dias_seleccionado = 'No';
         }
+    }
 
-        $horariosAulas = Horario::where('aula_id', $this->aula)->get();
-        $this->respuesta = 'Si';
+    public function validarAulaSeleccionada()
+    {
+        // validacion de aula con hora_inicio y hora_fin
+        $horariosAulas = Horario::where('aula_id', $this->aula_id)->where('estado', 'VIGENTE')
+            ->where('id', '!=', $this->selected_id)->get();
+        $this->horario_libre = 'Si';
 
         foreach ($horariosAulas as $horarioAula) {
             if ($this->lunes) {
-                if ($this->hora_inicio >= $horarioAula->hora_inicio && $this->hora_inicio <= $horarioAula->hora_fin) {
+                if ($this->hora_inicio > $horarioAula->hora_inicio && $this->hora_inicio < $horarioAula->hora_fin) {
                     if ($horarioAula->lunes != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
-                if ($this->hora_fin >= $horarioAula->hora_inicio && $this->hora_fin <= $horarioAula->hora_fin) {
+                if ($this->hora_fin > $horarioAula->hora_inicio && $this->hora_fin < $horarioAula->hora_fin) {
                     if ($horarioAula->lunes != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
             }
             if ($this->martes) {
-                if ($this->hora_inicio >= $horarioAula->hora_inicio && $this->hora_inicio <= $horarioAula->hora_fin) {
+                if ($this->hora_inicio > $horarioAula->hora_inicio && $this->hora_inicio < $horarioAula->hora_fin) {
                     if ($horarioAula->martes != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
-                if ($this->hora_fin >= $horarioAula->hora_inicio && $this->hora_fin <= $horarioAula->hora_fin) {
+                if ($this->hora_fin > $horarioAula->hora_inicio && $this->hora_fin < $horarioAula->hora_fin) {
                     if ($horarioAula->martes != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
             }
             if ($this->miercoles) {
-                if ($this->hora_inicio >= $horarioAula->hora_inicio && $this->hora_inicio <= $horarioAula->hora_fin) {
+                if ($this->hora_inicio > $horarioAula->hora_inicio && $this->hora_inicio < $horarioAula->hora_fin) {
                     if ($horarioAula->miercoles != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
-                if ($this->hora_fin >= $horarioAula->hora_inicio && $this->hora_fin <= $horarioAula->hora_fin) {
+                if ($this->hora_fin > $horarioAula->hora_inicio && $this->hora_fin < $horarioAula->hora_fin) {
                     if ($horarioAula->miercoles != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
             }
             if ($this->jueves) {
-                if ($this->hora_inicio >= $horarioAula->hora_inicio && $this->hora_inicio <= $horarioAula->hora_fin) {
+                if ($this->hora_inicio > $horarioAula->hora_inicio && $this->hora_inicio < $horarioAula->hora_fin) {
                     if ($horarioAula->jueves != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
-                if ($this->hora_fin >= $horarioAula->hora_inicio && $this->hora_fin <= $horarioAula->hora_fin) {
+                if ($this->hora_fin > $horarioAula->hora_inicio && $this->hora_fin < $horarioAula->hora_fin) {
                     if ($horarioAula->jueves != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
             }
             if ($this->viernes) {
-                if ($this->hora_inicio >= $horarioAula->hora_inicio && $this->hora_inicio <= $horarioAula->hora_fin) {
+                if ($this->hora_inicio > $horarioAula->hora_inicio && $this->hora_inicio < $horarioAula->hora_fin) {
                     if ($horarioAula->viernes != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
-                if ($this->hora_fin >= $horarioAula->hora_inicio && $this->hora_fin <= $horarioAula->hora_fin) {
+                if ($this->hora_fin > $horarioAula->hora_inicio && $this->hora_fin < $horarioAula->hora_fin) {
                     if ($horarioAula->viernes != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
             }
             if ($this->sabado) {
-                if ($this->hora_inicio >= $horarioAula->hora_inicio && $this->hora_inicio <= $horarioAula->hora_fin) {
+                if ($this->hora_inicio > $horarioAula->hora_inicio && $this->hora_inicio < $horarioAula->hora_fin) {
                     if ($horarioAula->sabado != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
-                if ($this->hora_fin >= $horarioAula->hora_inicio && $this->hora_fin <= $horarioAula->hora_fin) {
+                if ($this->hora_fin > $horarioAula->hora_inicio && $this->hora_fin < $horarioAula->hora_fin) {
                     if ($horarioAula->sabado != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
             }
             if ($this->domingo) {
-                if ($this->hora_inicio >= $horarioAula->hora_inicio && $this->hora_inicio <= $horarioAula->hora_fin) {
+                if ($this->hora_inicio > $horarioAula->hora_inicio && $this->hora_inicio < $horarioAula->hora_fin) {
                     if ($horarioAula->domingo != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
-                if ($this->hora_fin >= $horarioAula->hora_inicio && $this->hora_fin <= $horarioAula->hora_fin) {
+                if ($this->hora_fin > $horarioAula->hora_inicio && $this->hora_fin < $horarioAula->hora_fin) {
                     if ($horarioAula->domingo != 'NO') {
-                        $this->respuesta = 'No';
+                        $this->horario_libre = 'No';
                     }
                 }
             }
         }
-        if ($this->profesor != 1) {
-            $horariosProfesor = Horario::where('professor_id', $this->profesor)
-                ->get();
-        } else {
-            $horariosProfesor = [];
-        }
-        $this->resultado = 'Si';
+    }
 
-        foreach ($horariosProfesor as $horarioProf) {
-            if ($this->lunes) {
-                if ($this->hora_inicio >= $horarioProf->hora_inicio && $this->hora_inicio <= $horarioProf->hora_fin) {
-                    if ($horarioProf->lunes != 'NO') {
-                        $this->resultado = 'No';
+    public function validarProfesorSeleccionado()
+    {
+        // validacion de disponibilidad del profesor
+        if ($this->professor_id != 1) {
+            $horariosProfesor = Horario::where('professor_id', $this->professor_id)->where('estado', 'VIGENTE')
+                ->where('id', '!=', $this->selected_id)->get();
+            $this->profesor_libre = 'Si';
+
+            foreach ($horariosProfesor as $horarioProf) {
+                if ($this->lunes) {
+                    if ($this->hora_inicio > $horarioProf->hora_inicio && $this->hora_inicio < $horarioProf->hora_fin) {
+                        if ($horarioProf->lunes != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
+                    }
+                    if ($this->hora_fin > $horarioProf->hora_inicio && $this->hora_fin < $horarioProf->hora_fin) {
+                        if ($horarioProf->lunes != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
                     }
                 }
-                if ($this->hora_fin >= $horarioProf->hora_inicio && $this->hora_fin <= $horarioProf->hora_fin) {
-                    if ($horarioProf->lunes != 'NO') {
-                        $this->resultado = 'No';
+                if ($this->martes) {
+                    if ($this->hora_inicio > $horarioProf->hora_inicio && $this->hora_inicio < $horarioProf->hora_fin) {
+                        if ($horarioProf->martes != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
+                    }
+                    if ($this->hora_fin > $horarioProf->hora_inicio && $this->hora_fin < $horarioProf->hora_fin) {
+                        if ($horarioProf->martes != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
                     }
                 }
-            }
-            if ($this->martes) {
-                if ($this->hora_inicio >= $horarioProf->hora_inicio && $this->hora_inicio <= $horarioProf->hora_fin) {
-                    if ($horarioProf->martes != 'NO') {
-                        $this->resultado = 'No';
+                if ($this->miercoles) {
+                    if ($this->hora_inicio > $horarioProf->hora_inicio && $this->hora_inicio < $horarioProf->hora_fin) {
+                        if ($horarioProf->miercoles != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
+                    }
+                    if ($this->hora_fin > $horarioProf->hora_inicio && $this->hora_fin < $horarioProf->hora_fin) {
+                        if ($horarioProf->miercoles != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
                     }
                 }
-                if ($this->hora_fin >= $horarioProf->hora_inicio && $this->hora_fin <= $horarioProf->hora_fin) {
-                    if ($horarioProf->martes != 'NO') {
-                        $this->resultado = 'No';
+                if ($this->jueves) {
+                    if ($this->hora_inicio > $horarioProf->hora_inicio && $this->hora_inicio < $horarioProf->hora_fin) {
+                        if ($horarioProf->jueves != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
+                    }
+                    if ($this->hora_fin > $horarioProf->hora_inicio && $this->hora_fin < $horarioProf->hora_fin) {
+                        if ($horarioProf->jueves != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
                     }
                 }
-            }
-            if ($this->miercoles) {
-                if ($this->hora_inicio >= $horarioProf->hora_inicio && $this->hora_inicio <= $horarioProf->hora_fin) {
-                    if ($horarioProf->miercoles != 'NO') {
-                        $this->resultado = 'No';
+                if ($this->viernes) {
+                    if ($this->hora_inicio > $horarioProf->hora_inicio && $this->hora_inicio < $horarioProf->hora_fin) {
+                        if ($horarioProf->viernes != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
+                    }
+                    if ($this->hora_fin > $horarioProf->hora_inicio && $this->hora_fin < $horarioProf->hora_fin) {
+                        if ($horarioProf->viernes != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
                     }
                 }
-                if ($this->hora_fin >= $horarioProf->hora_inicio && $this->hora_fin <= $horarioProf->hora_fin) {
-                    if ($horarioProf->miercoles != 'NO') {
-                        $this->resultado = 'No';
+                if ($this->sabado) {
+                    if ($this->hora_inicio > $horarioProf->hora_inicio && $this->hora_inicio < $horarioProf->hora_fin) {
+                        if ($horarioProf->sabado != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
+                    }
+                    if ($this->hora_fin > $horarioProf->hora_inicio && $this->hora_fin < $horarioProf->hora_fin) {
+                        if ($horarioProf->sabado != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
                     }
                 }
-            }
-            if ($this->jueves) {
-                if ($this->hora_inicio >= $horarioProf->hora_inicio && $this->hora_inicio <= $horarioProf->hora_fin) {
-                    if ($horarioProf->jueves != 'NO') {
-                        $this->resultado = 'No';
+                if ($this->domingo) {
+                    if ($this->hora_inicio > $horarioProf->hora_inicio && $this->hora_inicio < $horarioProf->hora_fin) {
+                        if ($horarioProf->domingo != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
                     }
-                }
-                if ($this->hora_fin >= $horarioProf->hora_inicio && $this->hora_fin <= $horarioProf->hora_fin) {
-                    if ($horarioProf->jueves != 'NO') {
-                        $this->resultado = 'No';
-                    }
-                }
-            }
-            if ($this->viernes) {
-                if ($this->hora_inicio >= $horarioProf->hora_inicio && $this->hora_inicio <= $horarioProf->hora_fin) {
-                    if ($horarioProf->viernes != 'NO') {
-                        $this->resultado = 'No';
-                    }
-                }
-                if ($this->hora_fin >= $horarioProf->hora_inicio && $this->hora_fin <= $horarioProf->hora_fin) {
-                    if ($horarioProf->viernes != 'NO') {
-                        $this->resultado = 'No';
-                    }
-                }
-            }
-            if ($this->sabado) {
-                if ($this->hora_inicio >= $horarioProf->hora_inicio && $this->hora_inicio <= $horarioProf->hora_fin) {
-                    if ($horarioProf->sabado != 'NO') {
-                        $this->resultado = 'No';
-                    }
-                }
-                if ($this->hora_fin >= $horarioProf->hora_inicio && $this->hora_fin <= $horarioProf->hora_fin) {
-                    if ($horarioProf->sabado != 'NO') {
-                        $this->resultado = 'No';
-                    }
-                }
-            }
-            if ($this->domingo) {
-                if ($this->hora_inicio >= $horarioProf->hora_inicio && $this->hora_inicio <= $horarioProf->hora_fin) {
-                    if ($horarioProf->domingo != 'NO') {
-                        $this->resultado = 'No';
-                    }
-                }
-                if ($this->hora_fin >= $horarioProf->hora_inicio && $this->hora_fin <= $horarioProf->hora_fin) {
-                    if ($horarioProf->domingo != 'NO') {
-                        $this->resultado = 'No';
+                    if ($this->hora_fin > $horarioProf->hora_inicio && $this->hora_fin < $horarioProf->hora_fin) {
+                        if ($horarioProf->domingo != 'NO') {
+                            $this->profesor_libre = 'No';
+                        }
                     }
                 }
             }
         }
+    }
 
-        $rules = [
-            'pago_cuota' => 'integer',
-            'asignatura' => 'not_in:Elegir',
-            'aula' => 'not_in:Elegir',
-            'profesor' => 'not_in:Elegir',
-            'periodo' => 'required',
-            'dias' => 'not_in:No',
-            'hora_inicio' => 'required',
-            'hora_fin' => 'required|after_or_equal:hora_inicio',
-            'fecha_inicio' => 'required',
-            'fecha_fin' => 'required|after_or_equal:fecha_inicio',
-            'dia_de_cobro' => 'required',
-            'horas_capacitacion' => 'required',
-            'costo_curso' => 'required',
-            'costo_matricula' => 'required',
-            'duracion_meses' => 'required',
-            'resultado' => 'not_in:No',
-            'respuesta' => 'not_in:No',
-        ];
-        $messages = [
-            'pago_cuota.integer' => 'El pago de cuotas no debe tener decimales',
-            'asignatura.not_in' => 'Seleccione un curso distinto a Elegir.',
-            'aula.not_in' => 'Seleccione un aula distinta a Elegir.',
-            'profesor.not_in' => 'Seleccione un profesor distinto a Elegir.',
-            'periodo.required' => 'Seleccione un periodo.',
-            'dias.not_in' => 'Seleccione los dias de clases.',
-            'hora_inicio.required' => 'La hora de inicio es requerido.',
-            'hora_fin.required' => 'La hora de finalización es requerido.',
-            'hora_fin.after_or_equal' => 'La hora de finalización debe ser posterior a la hora de inicio.',
-            'fecha_inicio.required' => 'La fecha de inicio es requerido.',
-            'fecha_fin.required' => 'La fecha de finalización es requerido.',
-            'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser posterior a la fecha inicial.',
-            'dia_de_cobro.required' => 'El día de cobro es requerido.',
-            'horas_capacitacion.required' => 'Las horas de capacitación son requeridas.',
-            'costo_curso.required' => 'El costo del curso es requerido.',
-            'costo_matricula.required' => 'El costo de la matricula es requerido.',
-            'duracion_meses.required' => 'La duración del curso es requerida.',
-            'resultado.not_in' => 'El profesor seleccionado está registrado en otro curso en uno de los dias selecionados entre los horarios seleccionados.',
-            'respuesta.not_in' => 'El aula seleccionada está ocupado en uno de los dias selecionados.',
-        ];
-        $this->validate($rules, $messages);
+    public function Store()
+    {
+        $this->validarDiasSeleccionados();
+
+        $this->validarAulaSeleccionada();
+
+        $this->validarProfesorSeleccionado();
+
+
+        $validatedData = $this->validate(
+            [
+                'periodo' => 'required',
+                'hora_inicio' => 'required',
+                'hora_fin' => 'required|after_or_equal:hora_inicio',
+                'fecha_inicio' => 'required',
+                'fecha_fin' => 'required|after_or_equal:fecha_inicio',
+                'dia_de_cobro' => 'required|integer|between:1,10',
+                'horas_capacitacion' => 'required|integer|gt:0',
+                'costo_curso' => 'required|integer|gt:0',
+                'costo_matricula' => 'required|integer|gt:0',
+                'duracion_meses' => 'required|integer|between:1,10',
+                'pago_cuota' => 'integer',
+                'aula_id' => 'not_in:Elegir',
+                'professor_id' => 'not_in:Elegir',
+                'asignatura_id' => 'not_in:Elegir',
+                'dias_seleccionado' => 'not_in:No',
+                'horario_libre' => 'not_in:No',
+                'profesor_libre' => 'not_in:No',
+            ],
+            [
+                'periodo.required' => 'Seleccione un periodo.',
+                'hora_inicio.required' => 'La hora de inicio es requerido.',
+                'hora_fin.required' => 'La hora de finalización es requerido.',
+                'hora_fin.after_or_equal' => 'La hora de finalización debe ser posterior a la hora de inicio.',
+                'fecha_inicio.required' => 'La fecha de inicio es requerido.',
+                'fecha_fin.required' => 'La fecha de finalización es requerido.',
+                'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser posterior a la fecha inicial.',
+                'dia_de_cobro.required' => 'El día de cobro es requerido.',
+                'dia_de_cobro.integer' => 'El día debe ser un número.',
+                'dia_de_cobro.between' => 'El día debe ser entre el 1 y el 10.',
+                'horas_capacitacion.required' => 'Las horas de capacitación son requeridas.',
+                'horas_capacitacion.integer' => 'Las horas deben ser un número.',
+                'horas_capacitacion.gt' => 'Las horas deben ser mayor a 0.',
+                'costo_curso.required' => 'El costo del curso es requerido.',
+                'costo_curso.integer' => 'El costo debe ser número.',
+                'costo_curso.gt' => 'El costo debe ser mayor a 0.',
+                'costo_matricula.required' => 'El costo de la matricula es requerido.',
+                'costo_matricula.integer' => 'El costo debe ser un número.',
+                'costo_matricula.gt' => 'El costo debe ser mayor a 0.',
+                'duracion_meses.required' => 'La duración del curso es requerida.',
+                'duracion_meses.integer' => 'La duración debe ser un número.',
+                'duracion_meses.between' => 'La duración estar entre de 1 a 10 meses.',
+                'pago_cuota.integer' => 'El pago de cuotas no debe tener decimales',
+                'aula_id.not_in' => 'Seleccione un aula distinta a Elegir.',
+                'professor_id.not_in' => 'Seleccione un profesor distinto a Elegir.',
+                'asignatura_id.not_in' => 'Seleccione un curso distinto a Elegir.',
+                'dias_seleccionado.not_in' => 'Seleccione los dias de clases.',
+                'horario_libre.not_in' => 'El aula seleccionada está ocupada en ese horario.',
+                'profesor_libre.not_in' => 'El profesor seleccionado está ocupado en ese horario.',
+            ],
+        );
 
         if ($this->lunes) {
             $lunes = 'Lu';
@@ -357,31 +417,18 @@ class HorariosController extends Component
             $domingo = 'NO';
         }
 
-        Horario::create([
-            'lunes' => $lunes,
-            'martes' => $martes,
-            'miercoles' => $miercoles,
-            'jueves' => $jueves,
-            'viernes' => $viernes,
-            'sabado' => $sabado,
-            'domingo' => $domingo,
-            'modalidad' => $this->modalidad,
-            'periodo' => $this->periodo,
-            'hora_inicio' => $this->hora_inicio,
-            'hora_fin' => $this->hora_fin,
-            'fecha_inicio' => $this->fecha_inicio,
-            'fecha_fin' => $this->fecha_fin,
-            'dia_de_cobro' => $this->dia_de_cobro,
-            'horas_capacitacion' => $this->horas_capacitacion,
-            'costo_curso' => $this->costo_curso,
-            'costo_matricula' => $this->costo_matricula,
-            'duracion_meses' => $this->duracion_meses,
-            'pago_cuota' => $this->pago_cuota,
-            'estado' => $this->estado,
-            'asignatura_id' => $this->asignatura,
-            'aula_id' => $this->aula,
-            'professor_id' => $this->profesor,
-        ]);
+        Horario::create(
+            [
+                'lunes' => $lunes,
+                'martes' => $martes,
+                'miercoles' => $miercoles,
+                'jueves' => $jueves,
+                'viernes' => $viernes,
+                'sabado' => $sabado,
+                'domingo' => $domingo,
+                'modalidad' => $this->modalidad,
+            ] + $validatedData
+        );
 
         $this->resetUI();
         $this->emit('item-added', 'Horario registrado');
@@ -390,7 +437,6 @@ class HorariosController extends Component
     public function Edit(Horario $horario)
     {
         $this->resetValidation();
-        $this->selected_id = $horario->id;
 
         if ($horario->lunes == 'Lu') {
             $this->lunes = true;
@@ -434,6 +480,7 @@ class HorariosController extends Component
             $this->domingo = false;
         }
 
+        $this->selected_id = $horario->id;
         $this->modalidad = $horario->modalidad;
         $this->periodo = $horario->periodo;
         $this->hora_inicio = $horario->hora_inicio;
@@ -446,40 +493,57 @@ class HorariosController extends Component
         $this->costo_matricula = $horario->costo_matricula;
         $this->duracion_meses = $horario->duracion_meses;
         $this->pago_cuota = $horario->pago_cuota;
-        $this->asignatura = $horario->asignatura_id;
-        $this->aula = $horario->aula_id;
-        $this->profesor = $horario->professor_id;
-        $this->estado = $horario->estado;
+        $this->asignatura_id = $horario->asignatura_id;
+        $this->aula_id = $horario->aula_id;
+        $this->professor_id = $horario->professor_id;
 
         $this->emit('show-modal', 'show modal!');
     }
 
     public function Update()
     {
-        if ($this->lunes || $this->martes || $this->miercoles || $this->jueves || $this->viernes || $this->sabado || $this->domingo) {
-            $this->dias = 'Si';
-        } else {
-            $this->dias = 'No';
-        }
-        $rules = [
-            'hora_inicio' => 'required',
-            'hora_fin' => 'required|after_or_equal:hora_inicio',
-            'fecha_inicio' => 'required',
-            'fecha_fin' => 'required|after_or_equal:fecha_inicio',
-            'dia_de_cobro' => 'required',
-            'horas_capacitacion' => 'required',
-            'dias' => 'not_in:No',
-        ];
-        $messages = [
-            'hora_inicio.required' => 'La hora de inicio es requerido',
-            'hora_fin.after_or_equal' => 'La hora de finalización debe ser posterior a la hora de inicio.',
-            'fecha_inicio.required' => 'La fecha de inicio es requerido',
-            'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser posterior a la fecha inicial.',
-            'dia_de_cobro.required' => 'El día de cobro es requerido.',
-            'horas_capacitacion.required' => 'Las horas de capacitación son requeridas.',
-            'dias.not_in' => 'Seleccione los dias de clases.',
-        ];
-        $this->validate($rules, $messages);
+        $this->validarDiasSeleccionados();
+
+        $this->validarAulaSeleccionada();
+
+        $this->validarProfesorSeleccionado();
+
+        $validatedData = $this->validate(
+            [
+                'hora_inicio' => 'required',
+                'hora_fin' => 'required|after_or_equal:hora_inicio',
+                'fecha_inicio' => 'required',
+                'fecha_fin' => 'required|after_or_equal:fecha_inicio',
+                'dia_de_cobro' => 'required|integer|between:1,10',
+                'horas_capacitacion' => 'required|integer|gt:0',
+                'pago_cuota' => 'integer',
+                'aula_id' => 'not_in:Elegir',
+                'professor_id' => 'not_in:Elegir',
+                'dias_seleccionado' => 'not_in:No',
+                'horario_libre' => 'not_in:No',
+                'profesor_libre' => 'not_in:No',
+            ],
+            [
+                'hora_inicio.required' => 'La hora de inicio es requerido.',
+                'hora_fin.required' => 'La hora de finalización es requerido.',
+                'hora_fin.after_or_equal' => 'La hora de finalización debe ser posterior a la hora de inicio.',
+                'fecha_inicio.required' => 'La fecha de inicio es requerido.',
+                'fecha_fin.required' => 'La fecha de finalización es requerido.',
+                'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser posterior a la fecha inicial.',
+                'dia_de_cobro.required' => 'El día de cobro es requerido.',
+                'dia_de_cobro.integer' => 'El día debe ser un número.',
+                'dia_de_cobro.between' => 'El día debe ser entre el 1 y el 10.',
+                'horas_capacitacion.required' => 'Las horas de capacitación son requeridas.',
+                'horas_capacitacion.integer' => 'Las horas deben ser un número.',
+                'horas_capacitacion.gt' => 'Las horas deben ser mayor a 0.',
+                'pago_cuota.integer' => 'El pago de cuotas no debe tener decimales',
+                'aula_id.not_in' => 'Seleccione un aula distinta a Elegir.',
+                'professor_id.not_in' => 'Seleccione un profesor distinto a Elegir.',
+                'dias_seleccionado.not_in' => 'Seleccione los dias de clases.',
+                'horario_libre.not_in' => 'El aula seleccionada está ocupada en ese horario.',
+                'profesor_libre.not_in' => 'El profesor seleccionado está ocupado en ese horario.',
+            ],
+        );
 
         if ($this->lunes) {
             $lunes = 'Lu';
@@ -527,22 +591,7 @@ class HorariosController extends Component
             'sabado' => $sabado,
             'domingo' => $domingo,
             'modalidad' => $this->modalidad,
-            'periodo' => $this->periodo,
-            'hora_inicio' => $this->hora_inicio,
-            'hora_fin' => $this->hora_fin,
-            'fecha_inicio' => $this->fecha_inicio,
-            'fecha_fin' => $this->fecha_fin,
-            'dia_de_cobro' => $this->dia_de_cobro,
-            'horas_capacitacion' => $this->horas_capacitacion,
-            'costo_curso' => $this->costo_curso,
-            'costo_matricula' => $this->costo_matricula,
-            'duracion_meses' => $this->duracion_meses,
-            'pago_cuota' => $this->pago_cuota,
-            'asignatura_id' => $this->asignatura,
-            'aula_id' => $this->aula,
-            'professor_id' => $this->profesor,
-            'estado' => $this->estado,
-        ]);
+        ] + $validatedData);
 
         // actualizar la fecha limite de pago de todos los pagos de los estudiantes del horario
         $pagosHorario = Pago::join('alumno_horario as ah', 'pagos.alumno_horario_id', 'ah.id')
@@ -567,9 +616,9 @@ class HorariosController extends Component
 
     public function MostrarEstudiantes(Horario $horario)
     {
-        $this->select_horario = $horario->id;
         $this->listadoEstudiantes = AlumnoHorario::with('alumno')
-            ->where('horario_id', $this->select_horario)->get();
+            ->where('horario_id', $horario->id)->get();
+
         $this->emit('show-modalEstudiantes', 'show modal!');
     }
 
@@ -579,11 +628,11 @@ class HorariosController extends Component
     {
         $this->reset([
             'selected_id',
-            'asignatura', 'aula', 'modalidad', 'profesor', 'periodo', 'dias', 'lunes', 'martes', 'miercoles',
+            'asignatura_id', 'aula_id', 'modalidad', 'professor_id', 'periodo', 'dias_seleccionado', 'lunes', 'martes', 'miercoles',
             'jueves', 'viernes', 'sabado', 'domingo', 'hora_inicio', 'hora_fin', 'fecha_inicio', 'fecha_fin',
-            'estado', 'dia_de_cobro',
-            'respuesta', 'resultado',
-            'listadoEstudiantes', 'select_horario',
+            'dia_de_cobro',
+            'horario_libre', 'profesor_libre',
+            'listadoEstudiantes',
         ]);
 
         $this->resetValidation();

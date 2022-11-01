@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
-use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class InscripcionesController extends Component
 {
@@ -44,6 +44,7 @@ class InscripcionesController extends Component
     private $pagination = 15;
 
     protected $paginationTheme = 'bootstrap';
+
 
     public function mount(Horario $horario_id)
     {
@@ -432,6 +433,11 @@ class InscripcionesController extends Component
         ]);
         $this->resetUI();
         $this->emit('hide-modalNotas', 'Se actualizó correctamente');
+    }
+
+    public function generarCertificado()
+    {
+
     }
 
     protected $listeners = ['deleteRow' => 'Destroy', 'finalizarCurso'];
