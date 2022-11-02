@@ -8,11 +8,13 @@ use App\Models\Horario;
 use App\Models\Pago;
 use App\Models\SolicitudPago;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
-
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\PhpWord;
 
 class InscripcionesController extends Component
 {
@@ -435,9 +437,31 @@ class InscripcionesController extends Component
         $this->emit('hide-modalNotas', 'Se actualizó correctamente');
     }
 
-    public function generarCertificado()
+    public function generarCertificado(AlumnoHorario $alumnohorario)
     {
+        $nombreAlumno = $alumnohorario->alumno->nombre;
+        $nombreCurso = $alumnohorario->horario->asignatura->nombre;
+        $descripcion = $alumnohorario->horario->asignatura->descripcion;
+        $horas_capacitacion = $alumnohorario->horario->horas_capacitacion;
+        $fecha_fin = \Carbon\Carbon::parse($alumnohorario->horario->fecha_fin)->formatLocalized('%d %B %Y');
+        $profesor = $alumnohorario->horario->professor->nombre;
 
+        $template = new \PhpOffice\PhpWord\TemplateProcessor('Certificado_template.docx');
+        $template->setValue('nomEstudiante', $nombreAlumno);
+        $template->setValue('nomCurso', $nombreCurso);
+        $template->setValue('descripcionCurso', $descripcion);
+        $template->setValue('horasCapacitacion', $horas_capacitacion);
+        $template->setValue('fechaFinalizacionCurso', $fecha_fin);
+        $template->setValue('nombreProfesor', $profesor);
+
+        $tenpFile = tempnam(sys_get_temp_dir(), 'PHPWord');
+        $template->saveAs($tenpFile);
+
+        $header = [
+            "Content-Type: application/octet-stream",
+        ];
+
+        return response()->download($tenpFile, $nombreAlumno . '.docx', $header)->deleteFileAfterSend($shouldDelete = true);
     }
 
     protected $listeners = ['deleteRow' => 'Destroy', 'finalizarCurso'];

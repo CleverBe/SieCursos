@@ -14,7 +14,6 @@
                     @if ($estado == 'VIGENTE')
                         <x-button wire:click="Agregar()" texto="NUEVO ESTUDIANTE" class="mb-1" /> <br>
                         <x-button onclick="ConfirmFinalizarCurso()" color="danger" texto="FINALIZAR CURSO" />
-                        <x-button wire:click="generarCertificado" texto="Certificado" class="mb-1" /> <br>
                     @endif
                 </ul>
             </div>
@@ -94,8 +93,9 @@
                                                 <a onclick="Confirm('{{ $inscripcion->idAlumno_horario }}','{{ $inscripcion->idAlumno }}',
                                                     '{{ $inscripcion->nombreAlumno }}')"
                                                     class="dropdown-item">Eliminar</a>
-                                                <a class="dropdown-item" href="{{ url('certificado/pdf') }}">
-                                                    Imprimir</a>
+                                                <a class="dropdown-item"
+                                                    wire:click="generarCertificado({{ $inscripcion->idAlumno_horario }})">
+                                                    Certificado</a>
                                             </div>
                                         </div>
                                     </td>
