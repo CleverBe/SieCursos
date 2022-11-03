@@ -66,6 +66,11 @@ class InscripcionesController extends Component
 
         $this->dias = $this->lunes . $this->martes . $this->miercoles . $this->jueves . $this->viernes . $this->sabado . $this->domingo;
     }
+    // resetear paginacion cuando se busca un elemento en otra pagina que no sea la primera
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {
@@ -461,7 +466,7 @@ class InscripcionesController extends Component
             "Content-Type: application/octet-stream",
         ];
 
-        return response()->download($tenpFile, $nombreAlumno . '.docx', $header)->deleteFileAfterSend($shouldDelete = true);
+        return response()->download($tenpFile, 'Certificado ' . $nombreAlumno . '.docx', $header)->deleteFileAfterSend($shouldDelete = true);
     }
 
     protected $listeners = ['deleteRow' => 'Destroy', 'finalizarCurso'];

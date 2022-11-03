@@ -38,6 +38,11 @@ class UsuariosController extends Component
         $this->profile = 'Elegir';
         $this->rolefiltro = 'PROFESSOR';
     }
+    // resetear paginacion cuando se busca un elemento en otra pagina que no sea la primera
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {

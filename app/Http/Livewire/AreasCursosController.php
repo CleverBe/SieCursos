@@ -23,6 +23,11 @@ class AreasCursosController extends Component
         $this->componentName = 'Areas de asignaturas';
         $this->selected_id = 0;
     }
+    // resetear paginacion cuando se busca un elemento en otra pagina que no sea la primera
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {

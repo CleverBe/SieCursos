@@ -46,6 +46,11 @@ class HorariosController extends Component
         $this->profesores = Professor::with('user')
             ->whereRelation('user', 'status', 'ACTIVE')->get();
     }
+    // resetear paginacion cuando se busca un elemento en otra pagina que no sea la primera
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {

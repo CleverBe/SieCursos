@@ -46,7 +46,7 @@
                                 {{ \Carbon\Carbon::parse($dateTo)->format('d/m/Y') }}</strong></span>
                     @else
                         <span style="font-size: 16px;"><strong>Fecha de consulta:
-                                {{ \Carbon\Carbon::now()->format('d-M-Y') }}</strong></span>
+                                {{ \Carbon\Carbon::now()->format('d/m/Y') }}</strong></span>
                     @endif
 
                     <br>

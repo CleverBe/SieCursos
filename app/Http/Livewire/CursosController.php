@@ -30,6 +30,11 @@ class CursosController extends Component
         $this->areas = Area::where('estado', 'ACTIVO')->get();
         $this->matricula = 100;
     }
+    // resetear paginacion cuando se busca un elemento en otra pagina que no sea la primera
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {

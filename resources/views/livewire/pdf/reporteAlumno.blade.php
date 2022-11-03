@@ -48,12 +48,14 @@
         <table cellpadding="0" cellspacing="-1" class="table-items" width="100%" height="50%">
             <thead>
                 <tr>
-                    <th width="10%">Nº</th>
+                    <th width="5%">Nº</th>
                     <th width="10%">Nombre</th>
                     <th width="20%">Telefono</th>
                     <th width="20%">Curso</th>
-                    <th width="20%">Horario</th>
-                    <th width="10%">Fecha inscripcion</th>
+                    <th width="15%">Horario</th>
+                    <th width="10%">Primera nota</th>
+                    <th width="10%">Segunda nota</th>
+                    <th width="10%">Nota final</th>
                 </tr>
             </thead>
 
@@ -77,8 +79,13 @@
                                 {{ $item->hora_inicio }}-{{ $item->hora_fin }}</FONT>
                         </td>
                         <td align="center">
-                            <FONT FACE="times new roman" SIZE=1>
-                                {{ \Carbon\Carbon::parse($item->fecha_inscripcion)->format('d/m/Y H:i') }}</FONT>
+                            <FONT FACE="times new roman" SIZE=1>{{ $item->primera_nota }}</FONT>
+                        </td>
+                        <td align="center">
+                            <FONT FACE="times new roman" SIZE=1>{{ $item->segunda_nota }}</FONT>
+                        </td>
+                        <td align="center">
+                            <FONT FACE="times new roman" SIZE=1>{{ $item->nota_final }}</FONT>
                         </td>
                     </tr>
                 @endforeach

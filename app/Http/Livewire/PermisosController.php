@@ -21,6 +21,11 @@ class PermisosController extends Component
         $this->pageTitle = 'Listado';
         $this->componentName = 'Permisos';
     }
+    // resetear paginacion cuando se busca un elemento en otra pagina que no sea la primera
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {

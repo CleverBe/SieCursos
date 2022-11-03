@@ -34,9 +34,10 @@ class ExportCursosPdfController extends Controller
                 'h.periodo',
                 'h.hora_inicio',
                 'h.hora_fin',
-                'a.costo',
                 'ah.id as idAlumno_horario',
-                'ah.fecha_inscripcion',
+                'ah.primera_nota',
+                'ah.segunda_nota',
+                'ah.nota_final',
                 'au.codigo',
             )
             ->where('h.periodo', $this->periodoFiltro)
@@ -59,6 +60,5 @@ class ExportCursosPdfController extends Controller
         $pdf = Pdf::loadView('livewire.pdf.reporteAlumno', compact('data', 'periodoFiltro', 'nombreAsignatura', 'horarioInfo'));
 
         return $pdf->stream('ReporteAlumnos.pdf');  // visualizar
-        // return $pdf->download('ReporteAlumnos.pdf');  // descargar
     }
 }

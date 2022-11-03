@@ -6,8 +6,6 @@ use App\Models\Alumno;
 use App\Models\Asignatura;
 use App\Models\Horario;
 use Livewire\Component;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class ReporteCursosController extends Component
 {
@@ -33,6 +31,12 @@ class ReporteCursosController extends Component
         $this->horarios = [];
     }
 
+    protected $queryString = [
+        'periodoFiltro',
+        'cursoFiltro' => ['except' => null],
+        'horarioFiltro' => ['except' => null],
+    ];
+
     public function render()
     {
         $this->Consulta();
@@ -40,11 +44,6 @@ class ReporteCursosController extends Component
         return view('livewire.reporteCursos.component')
             ->extends('layouts.theme.app')
             ->section('content');
-    }
-
-    public function updatedCursoFiltro()
-    {
-        $this->horarios = Horario::with('aula')->where('asignatura_id', $this->cursoFiltro)->get();
     }
 
     public function Consulta()
@@ -66,9 +65,10 @@ class ReporteCursosController extends Component
                 'h.periodo',
                 'h.hora_inicio',
                 'h.hora_fin',
-                'a.costo',
                 'ah.id as idAlumno_horario',
-                'ah.fecha_inscripcion',
+                'ah.primera_nota',
+                'ah.segunda_nota',
+                'ah.nota_final',
                 'au.codigo',
             )
             ->where('h.periodo', $this->periodoFiltro)
@@ -79,24 +79,9 @@ class ReporteCursosController extends Component
                 $query->where('h.id', $this->horarioFiltro);
             })
             ->get();
+
+        if ($this->cursoFiltro) {
+            $this->horarios = Horario::with('aula')->where('asignatura_id', $this->cursoFiltro)->get();
+        }
     }
-
-    /* public function getDetails($saleId)
-    {
-        $this->details = SaleDetail::join('products as p', 'p.id', 'sale_details.product_id')
-            ->select('sale_details.id', 'sale_details.price', 'sale_details.quantity', 'p.name as product')
-            ->where('sale_details.sale_id', $saleId)
-            ->get();
-
-        //
-        $suma = $this->details->sum(function ($item) {
-            return $item->price * $item->quantity;
-        });
-
-        $this->sumDetails = $suma;
-        $this->countDetails = $this->details->sum('quantity');
-        $this->saleId = $saleId;
-
-        $this->emit('show-modal', 'details loaded');
-    } */
 }

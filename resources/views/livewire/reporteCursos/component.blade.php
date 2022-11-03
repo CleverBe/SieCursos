@@ -62,7 +62,9 @@
                                         <th class="table-th text-withe text-center">Telefono</th>
                                         <th class="table-th text-withe text-center">Curso</th>
                                         <th class="table-th text-withe text-center">HORARIO</th>
-                                        <th class="table-th text-withe text-center">Fecha inscripcion</th>
+                                        <th class="table-th text-withe text-center">Primera nota</th>
+                                        <th class="table-th text-withe text-center">Segunda nota</th>
+                                        <th class="table-th text-withe text-center">Nota final</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -85,14 +87,18 @@
                                                     {{ $d->hora_inicio }}-{{ $d->hora_fin }}</h6>
                                             </td>
                                             <td>
-                                                <h6 class="text-center">
-                                                    {{ \Carbon\Carbon::parse($d->fecha_inscripcion)->format('d/m/Y H:i') }}
-                                                </h6>
+                                                <h6 class="text-center">{{ $d->primera_nota }}</h6>
+                                            </td>
+                                            <td>
+                                                <h6 class="text-center">{{ $d->segunda_nota }}</h6>
+                                            </td>
+                                            <td>
+                                                <h6 class="text-center">{{ $d->nota_final }}</h6>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="11">
+                                            <td colspan="8">
                                                 <h5 class="text-center">Sin Resultados</h5>
                                             </td>
                                         </tr>
