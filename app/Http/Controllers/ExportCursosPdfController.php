@@ -10,11 +10,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class ExportCursosPdfController extends Controller
 {
     public $periodoFiltro, $cursoFiltro, $horarioFiltro;
+
     public function reporte($periodoFiltro, $cursoFiltro = null, $horarioFiltro = null)
     {
         $this->periodoFiltro = $periodoFiltro;
         $this->cursoFiltro = $cursoFiltro;
-        $this->horarioFiltro = $cursoFiltro;
+        $this->horarioFiltro = $horarioFiltro;
         $data = [];
 
         $data = Alumno::join('users as u', 'alumnos.user_id', 'u.id')
@@ -41,10 +42,10 @@ class ExportCursosPdfController extends Controller
                 'au.codigo',
             )
             ->where('h.periodo', $this->periodoFiltro)
-            ->when($this->cursoFiltro, function ($query) {
+            ->when($cursoFiltro, function ($query) {
                 $query->where('a.id', $this->cursoFiltro);
             })
-            ->when($this->horarioFiltro, function ($query) {
+            ->when($horarioFiltro, function ($query) {
                 $query->where('h.id', $this->horarioFiltro);
             })
             ->get();

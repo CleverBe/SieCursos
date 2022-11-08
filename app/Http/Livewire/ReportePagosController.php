@@ -22,7 +22,7 @@ class ReportePagosController extends Component
         $this->componentName = 'Reporte de pagos';
         $this->data = [];
         $this->details = [];
-        $this->reportType = 0;
+        /* $this->reportType = '0'; */  //arreglar
         $this->periodoFiltro = date('Y-m', time());
         $this->cursos = Asignatura::where('estado', 'ACTIVO')->get();
         $this->horarios = [];
@@ -30,18 +30,32 @@ class ReportePagosController extends Component
         $this->dateTo = Carbon::parse(Carbon::now())->format('Y-m-d');
     }
 
+    protected $queryString = [
+        'periodoFiltro',
+        'cursoFiltro' => ['except' => null],
+        'horarioFiltro' => ['except' => null],
+        'horarioFiltro' => ['except' => null],
+        'reportType' => ['except' => '0'],
+        'dateFrom',
+        'dateTo',
+    ];
+
     public function render()
     {
         $this->Consulta();
 
-        return view('livewire.reportePagos.component', [])->extends('layouts.theme.app')
+        if ($this->cursoFiltro) {
+            $this->horarios = Horario::with('aula')->where('asignatura_id', $this->cursoFiltro)->get();
+        }
+
+        return view('livewire.reportePagos.component')->extends('layouts.theme.app')
             ->section('content');
     }
 
-    public function updatedCursoFiltro()
+    /* public function updatedCursoFiltro()
     {
         $this->horarios = Horario::with('aula')->where('asignatura_id', $this->cursoFiltro)->get();
-    }
+    } */
 
     public function Consulta()
     {
@@ -51,16 +65,6 @@ class ReportePagosController extends Component
         } else {
             $from = Carbon::parse($this->dateFrom)->format('Y-m-d') . ' 00:00:00';
             $to = Carbon::parse($this->dateTo)->format('Y-m-d')     . ' 23:59:59';
-        }
-
-        if ($this->reportType == 1 && ($this->dateFrom == '' || $this->dateTo == '')) {
-            $this->dateFrom = Carbon::parse(Carbon::now())->format('Y-m-d');
-            $this->dateTo = Carbon::parse(Carbon::now())->format('Y-m-d');
-            $this->emit('item', 'Reportes de Hoy');
-        }
-
-        if ($this->dateFrom == "" || $this->dateTo == "") {
-            $this->reportType = 0;
         }
 
         $this->data = Pago::join('alumno_horario as ah', 'ah.id', 'pagos.alumno_horario_id')

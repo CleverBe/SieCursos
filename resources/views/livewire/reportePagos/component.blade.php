@@ -54,7 +54,7 @@
                             </select>
                         </div>
                     </div>
-
+                    {{ $reportType }}
                     <div class="col-sm-12 col-md-4">
                         <h6>Fecha desde</h6>
                         <div class="form-group">

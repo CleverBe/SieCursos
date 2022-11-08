@@ -6,7 +6,6 @@ use App\Models\Alumno;
 use App\Models\Asistencia;
 use App\Models\Horario;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class ListaController extends Component

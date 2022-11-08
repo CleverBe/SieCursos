@@ -22,9 +22,9 @@
                             <tr>
                                 <th class="table-th text-withe text-center">#</th>
                                 <th class="table-th text-withe text-center">Modulo</th>
-                                <th class="table-th text-withe text-center">Monto</th>
+                                <th class="table-th text-withe text-center">PAGADO</th>
                                 <th class="table-th text-withe text-center">A pagar</th>
-                                <th class="table-th text-withe text-center">Fecha a pagar</th>
+                                <th class="table-th text-withe text-center">Fecha LIMITE DE PAGO</th>
                                 <th class="table-th text-withe text-center">Fecha de pago</th>
                                 <th class="table-th text-withe text-center">Mes</th>
                                 <th class="table-th text-withe text-center">Solicitar pago</th>
@@ -45,7 +45,7 @@
                                     <td>
                                         <h6 class="text-center">{{ $pago->a_pagar }}</h6>
                                     </td>
-                                    <td>
+                                    <td @if ($pago->monto < $pago->a_pagar && $pago->fecha_limite < date('Y-m-d H:i', time())) class="table-danger" @endif>
                                         <h6 class="text-center">
                                             {{ \Carbon\Carbon::parse($pago->fecha_limite)->format('d/m/Y') }}
                                         </h6>
@@ -64,7 +64,8 @@
                                     </td>
                                     <td class="text-center">
                                         @if (!$pago->fecha_pago)
-                                            <x-button wire:click="SolicitarPago({{ $pago->id_pago }})">
+                                            <x-button wire:click="SolicitarPago({{ $pago->id_pago }})"
+                                                title="Realizar solicitud">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"

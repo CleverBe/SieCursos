@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Alumno;
 use App\Models\Asignatura;
 use App\Models\Horario;
 use App\Models\Pago;
@@ -17,7 +16,7 @@ class ExportPagosController extends Controller
     {
         $this->periodoFiltro = $periodoFiltro;
         $this->cursoFiltro = $cursoFiltro;
-        $this->horarioFiltro = $cursoFiltro;
+        $this->horarioFiltro = $horarioFiltro;
 
         if ($reportType == 0) {
             $from = Carbon::parse(Carbon::now())->format('Y-m-d') . ' 00:00:00';
@@ -46,10 +45,10 @@ class ExportPagosController extends Controller
                 'alu.nombre as nombreAlumno',
             )
             ->where('h.periodo', $this->periodoFiltro)
-            ->when($this->cursoFiltro, function ($query) {
+            ->when($cursoFiltro, function ($query) {
                 $query->where('a.id', $this->cursoFiltro);
             })
-            ->when($this->horarioFiltro, function ($query) {
+            ->when($horarioFiltro, function ($query) {
                 $query->where('h.id', $this->horarioFiltro);
             })
             ->whereBetween('pagos.fecha_pago', [$from, $to])

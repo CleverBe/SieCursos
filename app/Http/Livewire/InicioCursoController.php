@@ -42,28 +42,8 @@ class InicioCursoController extends Component
     {
         $materiales = $this->horario_id->materials;
 
-        if (auth()->user()->profile == 'STUDENT') {
-            $alumno_id = Auth()->user()->alumno->id;
-            $estudiante = Alumno::join('alumno_horario as ah', 'ah.alumno_id', 'alumnos.id')
-                ->join('horarios as h', 'ah.horario_id', 'h.id')
-                ->join('asignaturas as a', 'h.asignatura_id', 'a.id')
-                ->select(
-                    'a.nombre as nombreAsignatura',
-                    'alumnos.nombre as nombreEstudiante',
-                    'ah.primera_nota',
-                    'ah.segunda_nota',
-                    'ah.nota_final',
-                )
-                ->where('alumnos.id', $alumno_id)
-                ->where('ah.horario_id', $this->horario_id->id)
-                ->get()->first();
-        } else {
-            $estudiante = [];
-        }
-
         return view('livewire.inicioCurso.component', [
             'materiales' => $materiales,
-            'estudiante' => $estudiante
         ])
             ->extends('layouts.theme.app')
             ->section('content');

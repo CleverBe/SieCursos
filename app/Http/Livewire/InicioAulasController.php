@@ -13,6 +13,8 @@ class InicioAulasController extends Component
 
     public $estadoFiltro;
 
+    public $informacion;
+
     private $pagination = 5;
 
     public function mount()
@@ -47,15 +49,18 @@ class InicioAulasController extends Component
                 ->paginate($this->pagination);
         }
         $horariosDisponibles = Horario::with('asignatura')->where('estado', 'VIGENTE')->paginate($this->pagination);
-        $horariosProximos = Horario::with('asignatura')->where('estado', 'PROXIMO')->paginate($this->pagination);
 
         return view('livewire.inicioAulas.component', [
             'horariosActuales' => $horariosActuales,
             'horariosDisponibles' => $horariosDisponibles,
             'horariosPasados' => $horariosPasados,
-            'horariosProximos' => $horariosProximos,
         ])
             ->extends('layouts.theme.app')
             ->section('content');
+    }
+    public function verInfo(Horario $horario)
+    {
+        $this->informacion = $horario->asignatura->descripcion;
+        $this->emit('show-modal', 'show modal!');
     }
 }

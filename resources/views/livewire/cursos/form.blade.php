@@ -18,33 +18,6 @@
             </div>
             <div class="col-sm-12 col-md-6">
                 <div class="form-group">
-                    <x-label texto="Duracion en meses" />
-                    <x-input type="number" wire:model.defer="duracion" />
-                    @error('duracion')
-                        <span class="text-danger er">{{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-6">
-                <div class="form-group">
-                    <x-label texto="Costo" />
-                    <x-input type="number" wire:model.defer="costo" />
-                    @error('costo')
-                        <span class="text-danger er">{{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-6">
-                <div class="form-group">
-                    <x-label texto="Matrícula" />
-                    <x-input type="number" wire:model.defer="matricula" />
-                    @error('matricula')
-                        <span class="text-danger er">{{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-6">
-                <div class="form-group">
                     <x-label texto="Area" />
                     <x-select wire:model.defer='area_id'>
                         <option value="Elegir">Elegir</option>

@@ -27,7 +27,7 @@
                     <tbody>
                         @forelse ($pagosAlumno as $pago)
                             <tr
-                                @if ($pago->monto < $pago->a_pagar) class="table-danger" @else class="table-success" @endif>
+                                @if ($pago->monto < $pago->a_pagar && $pago->fecha_limite < date('Y-m-d H:i', time())) class="table-danger" @endif>
                                 <td class="text-center">
                                     <h6 class="text-center">{{ $pago->modulo }}</h6>
                                 </td>

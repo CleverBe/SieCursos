@@ -106,15 +106,15 @@ class UserSeeder extends Seeder
         ]);
         // ASIGNATURAS
         Asignatura::create([
-            'nombre' => 'Reparación de celulares',
-            'descripcion' => 'curso práctico desde 0',
-            'image' => 'noimage.jpg',
+            'nombre' => 'Mantenimiento y reparación de celulares',
+            'descripcion' => 'Aprende a diagnosticar y reparar fallas de hardware de celualres, cambio de componentes, cambio de pantallas.',
+            'image' => 'reparacionCelulares.PNG',
             'area_id' => 2,
         ]);
         Asignatura::create([
             'nombre' => 'Photoshop desde 0',
-            'descripcion' => 'curso práctico desde 0',
-            'image' => 'noimage.jpg',
+            'descripcion' => 'Aprende a hacer diseños únicos en este curso práctico desde 0.',
+            'image' => 'photoshopdesde0.jpg',
             'area_id' => 1,
         ]);
     }

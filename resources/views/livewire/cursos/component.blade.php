@@ -44,11 +44,8 @@
                             <tr>
                                 <th class="table-th text-withe text-center">#</th>
                                 <th class="table-th text-withe text-center">NOMBRE</th>
+                                <th class="table-th text-withe text-center">DESCRIPCIÓN</th>
                                 <th class="table-th text-withe text-center">AREA</th>
-                                <th class="table-th text-withe text-center">DURACION MESES</th>
-                                <th class="table-th text-withe text-center">COSTO</th>
-                                <th class="table-th text-withe text-center">MATRICULA</th>
-                                <th class="table-th text-withe text-center">ESTADO</th>
                                 <th class="table-th text-withe text-center">IMAGEN</th>
                                 <th class="table-th text-withe text-center">ACCIONES</th>
                             </tr>
@@ -63,27 +60,16 @@
                                         <h6 class="text-center">{{ $asignatura->nombre }}</h6>
                                     </td>
                                     <td>
+                                        <h6 class="text-center">{{ $asignatura->descripcion }}</h6>
+                                    </td>
+                                    <td>
                                         <h6 class="text-center">{{ $asignatura->area->nombre }}</h6>
                                     </td>
-                                    <td>
-                                        <h6 class="text-center">{{ $asignatura->duracion }}</h6>
-                                    </td>
-                                    <td>
-                                        <h6 class="text-center">{{ $asignatura->costo }}</h6>
-                                    </td>
-                                    <td>
-                                        <h6 class="text-center">{{ $asignatura->matricula }}</h6>
-                                    </td>
-                                    <td>
-                                        <h6 class="text-center">{{ $asignatura->estado }}</h6>
-                                    </td>
                                     <td class="text-center">
-                                        <a href="javascript:void(0)" class="btn btn-dark" data-toggle="modal"
-                                            data-target="#sliderModal"><span>
-                                                <img src="{{ asset('storage/asignaturas/' . $asignatura->image) }}"
-                                                    alt="imagen de ejemplo" height="120" width="150"
-                                                    class="rounded">
-                                            </span></a>
+                                        <span>
+                                            <img src="{{ asset('storage/asignaturas/' . $asignatura->image) }}"
+                                                alt="imagen de ejemplo" height="120" width="150" class="rounded">
+                                        </span>
                                     </td>
                                     <td class="text-center">
                                         <x-button wire:click="Edit({{ $asignatura->id }})" title="Editar">

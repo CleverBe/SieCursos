@@ -14,11 +14,9 @@ class CursosController extends Component
     use WithFileUploads;
     public  $search, $selected_id;
     public  $pageTitle, $componentName;
-    public $nombre, $descripcion, $duracion, $costo, $estado, $image, $area_id = 'Elegir';
+    public $nombre, $descripcion, $estado, $image, $area_id = 'Elegir';
     private $pagination = 5;
     public $areaFiltro, $areas;
-
-    public $matricula;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -28,7 +26,6 @@ class CursosController extends Component
         $this->componentName = 'Cursos';
         $this->selected_id = 0;
         $this->areas = Area::where('estado', 'ACTIVO')->get();
-        $this->matricula = 100;
     }
     // resetear paginacion cuando se busca un elemento en otra pagina que no sea la primera
     public function updatingSearch()
@@ -68,19 +65,13 @@ class CursosController extends Component
             [
                 'nombre' => 'required|unique:asignaturas',
                 'descripcion' => 'nullable|min:5',
-                'duracion' => 'required',
-                'costo' => 'required',
                 'area_id' => 'not_in:Elegir',
-                'matricula' => 'required',
             ],
             [
                 'nombre.required' => 'El nombre del curso es requerido.',
                 'nombre.unique' => 'Ya existe un registro con ese nombre.',
                 'descripcion.min' => 'La descripción debe contener minimo 5 caracteres.',
-                'duracion.required' => 'La duracion es requerida.',
-                'costo.required' => 'El costo es requerido.',
                 'area_id.not_in' => 'Seleccione un área distinto a Elegir',
-                'matricula.required' => 'La matrícula es requerida.',
             ],
         );
 
@@ -103,12 +94,8 @@ class CursosController extends Component
         $this->selected_id = $asignatura->id;
         $this->nombre = $asignatura->nombre;
         $this->descripcion = $asignatura->descripcion;
-        $this->duracion = $asignatura->duracion;
-        $this->costo = $asignatura->costo;
-        $this->area_id = $asignatura->area_id;
         $this->estado = $asignatura->estado;
-        $this->matricula = $asignatura->matricula;
-
+        $this->area_id = $asignatura->area_id;
         $this->emit('show-modal', 'show modal!');
     }
 
@@ -118,19 +105,13 @@ class CursosController extends Component
             [
                 'nombre' => "required|unique:asignaturas,nombre,{$this->selected_id}",
                 'descripcion' => 'nullable|min:5',
-                'duracion' => 'required',
-                'costo' => 'required',
                 'area_id' => 'not_in:Elegir',
-                'matricula' => 'required',
             ],
             [
                 'nombre.required' => 'El nombre del curso es requerido.',
                 'nombre.unique' => 'Ya existe un registro con ese nombre.',
                 'descripcion.min' => 'La descripción debe contener minimo 5 caracteres.',
-                'duracion.required' => 'La duracion es requerida.',
-                'costo.required' => 'El costo es requerido.',
                 'area_id.not_in' => 'Seleccione un área distinto a Elegir.',
-                'matricula.required' => 'La matrícula es requerida.',
             ],
         );
 
@@ -172,7 +153,7 @@ class CursosController extends Component
     public function resetUI()
     {
         $this->selected_id = 0;
-        $this->reset(['nombre', 'descripcion', 'duracion', 'costo', 'estado', 'area_id', 'image']);
+        $this->reset(['nombre', 'descripcion', 'estado', 'area_id', 'image']);
         $this->resetValidation();
     }
 }

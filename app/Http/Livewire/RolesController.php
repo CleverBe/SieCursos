@@ -115,22 +115,6 @@ class RolesController extends Component
         $this->emit('item-deleted', 'Se eliminó el rol con exito');
     }
 
-    //poner en el componente users
-
-    /* public function AisgnarRoles($rolesList)
-    {
-        if($this->userSelected > 0)
-        {
-            $user = User::find($this->userSelected);
-            if($user)
-            {
-                $user->syncRoles($rolesList);
-                $this->emit('msg-ok', 'Roles asignados correctamente');
-                $this->resetInput();
-            }
-        }
-    } */
-
     public function resetUI()
     {
         $this->roleName = '';

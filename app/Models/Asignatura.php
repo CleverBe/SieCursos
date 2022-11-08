@@ -10,8 +10,7 @@ class Asignatura extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre', 'descripcion', 'estado', 'image',
-        'area_id',
+        'nombre', 'descripcion', 'estado', 'image', 'area_id',
     ];
     // relación de 1 a 1 con tabla Area
     public function area()

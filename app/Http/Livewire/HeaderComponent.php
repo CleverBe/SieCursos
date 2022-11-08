@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\Alumno;
 use App\Models\Horario;
 use App\Models\SolicitudPago;
 use Livewire\Component;
