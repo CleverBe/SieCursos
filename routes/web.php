@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ExportCertificadoController;
 use App\Http\Controllers\ExportCursosPdfController;
 use App\Http\Controllers\ExportPagosController;
 use App\Http\Livewire\AreasCursosController;
@@ -45,42 +44,37 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/usuarios', UsuariosController::class)->name('usuarios');
-    /* ->middleware('permission:verprofesores') */
-    Route::get('/aulas', AulasController::class)->name('aulas');
-    Route::get('/areasCursos', AreasCursosController::class)->name('areasCursos');
-    Route::get('/cursos', CursosController::class)->name('cursos');
-    Route::get('/horarios', HorariosController::class)->name('horarios');
-    Route::get('/inscripciones/{horario_id}', InscripcionesController::class);
-    Route::get('/solicitudesPagos', SolicitudesPagosController::class)->name('solicitudesPagos');
-    Route::get('/solicitud/{solicitud_id}', SolicitudController::class)->name('solicitud');
-    Route::get('/reportesCursos', ReporteCursosController::class)->name('reportesCursos');
-    Route::get('/reportesPagos', ReportePagosController::class)->name('reportesPagos');
+    Route::get('/usuarios', UsuariosController::class)->name('usuarios')->middleware('permission:ver_usuarios');
+    Route::get('/aulas', AulasController::class)->name('aulas')->middleware('permission:ver_aulas');
+    Route::get('/areasCursos', AreasCursosController::class)->name('areasCursos')->middleware('permission:ver_areas');
+    Route::get('/cursos', CursosController::class)->name('cursos')->middleware('permission:ver_cursos');
+    Route::get('/horarios', HorariosController::class)->name('horarios')->middleware('permission:ver_horarios');
+    Route::get('/inscripciones/{horario_id}', InscripcionesController::class)->name('inscripciones')->middleware('permission:ver_inscripciones');
+    Route::get('/solicitudesPagos', SolicitudesPagosController::class)->name('solicitudesPagos')->middleware('permission:ver_solicitudes');
+    Route::get('/solicitud/{solicitud_id}', SolicitudController::class)->name('solicitud')->middleware('permission:ver_solicitud');
+    Route::get('/reportesCursos', ReporteCursosController::class)->name('reportesCursos')->middleware('permission:ver_report_Estudiantes');
+    Route::get('/reportesPagos', ReportePagosController::class)->name('reportesPagos')->middleware('permission:ver_report_Pagos');
 
-    Route::get('reporteCursos/pdf/{periodoFiltro}/{cursoFiltro}/{horarioFiltro}', [ExportCursosPdfController::class, 'reporte']);
-    Route::get('reporteCursos/pdf/{periodoFiltro}/{cursoFiltro}', [ExportCursosPdfController::class, 'reporte']);
-    Route::get('reporteCursos/pdf/{periodoFiltro}', [ExportCursosPdfController::class, 'reporte']);
-
-    Route::get('reportePagos/pdf/{periodoFiltro}/{reportType}/{dateFrom}/{dateTo}/{cursoFiltro}/{horarioFiltro}', [ExportPagosController::class, 'reporte']);
-    Route::get('reportePagos/pdf/{periodoFiltro}/{reportType}/{dateFrom}/{dateTo}/{cursoFiltro}', [ExportPagosController::class, 'reporte']);
-    Route::get('reportePagos/pdf/{periodoFiltro}/{reportType}/{dateFrom}/{dateTo}', [ExportPagosController::class, 'reporte']);
-
-    Route::get('certificado/pdf', [ExportCertificadoController::class, 'reporte']);
-
-    Route::get('/inicioAulas', InicioAulasController::class)->name('inicioAulas');
-
+    Route::group(['middleware' => ['permission:export_report_Estudiantes']], function () {
+        Route::get('reporteCursos/pdf/{periodoFiltro}/{cursoFiltro}/{horarioFiltro}', [ExportCursosPdfController::class, 'reporte']);
+        Route::get('reporteCursos/pdf/{periodoFiltro}/{cursoFiltro}', [ExportCursosPdfController::class, 'reporte']);
+        Route::get('reporteCursos/pdf/{periodoFiltro}', [ExportCursosPdfController::class, 'reporte']);
+    });
+    Route::group(['middleware' => ['permission:export_report_Pagos']], function () {
+        Route::get('reportePagos/pdf/{periodoFiltro}/{reportType}/{dateFrom}/{dateTo}/{cursoFiltro}/{horarioFiltro}', [ExportPagosController::class, 'reporte']);
+        Route::get('reportePagos/pdf/{periodoFiltro}/{reportType}/{dateFrom}/{dateTo}/{cursoFiltro}', [ExportPagosController::class, 'reporte']);
+        Route::get('reportePagos/pdf/{periodoFiltro}/{reportType}/{dateFrom}/{dateTo}', [ExportPagosController::class, 'reporte']);
+    });
     Route::group(['middleware' => ['role:ADMIN']], function () {
         Route::get('/permisos', PermisosController::class)->name('permisos');
         Route::get('/roles', RolesController::class)->name('roles');
         Route::get('/asignar', AsignarController::class)->name('asignar');
     });
 
-    Route::get('cursos/{horario_id}', InicioCursoController::class);
-    Route::get('calificar/{horario_id}', CalificarController::class);
-    Route::get('lista/{horario_id}', ListaController::class);
-    Route::get('misPagos/{horario_id}', MiPlanDePagosController::class)->name('misPagos');
-    Route::get('misNotas/{horario_id}', NotasEstudianteController::class);
-});
-
-Route::group(['middleware' => ['permission:Report_Sales_Export']], function () {
+    Route::get('/inicioAulas', InicioAulasController::class)->name('inicioAulas')->middleware('permission:ver_inicio_aulas');
+    Route::get('/cursos/{horario_id}', InicioCursoController::class)->name('cursos')->middleware('permission:ver_inicio_curso');
+    Route::get('/calificar/{horario_id}', CalificarController::class)->name('calificar')->middleware('permission:ver_calificar');
+    Route::get('/lista/{horario_id}', ListaController::class)->name('lista')->middleware('permission:ver_lista');
+    Route::get('/misPagos/{horario_id}', MiPlanDePagosController::class)->name('misPagos')->middleware('permission:ver_mis_pagos');
+    Route::get('/misNotas/{horario_id}', NotasEstudianteController::class)->name('misNotas')->middleware('permission:ver_mis_notas');
 });

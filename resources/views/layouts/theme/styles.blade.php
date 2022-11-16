@@ -1,5 +1,4 @@
 {{-- SIE --}}
-<link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet">
 
 <link href="{{ asset('plugins/font-icons/fontawesome/css/fontawesome.css') }}" rel="stylesheet" type="text/css" />
 
@@ -41,6 +40,7 @@
 <link href="{{ asset('assets/css/components/cards/card.css') }}" rel="stylesheet" type="text/css" />
 
 <link href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet" type="text/css" />
+
 <style>
     aside {
         display: none !important;
@@ -72,5 +72,9 @@
     }
 </style>
 
+{{-- PAGINATION --}}
+
+<link rel="stylesheet" type="text/css" href="{{ asset('plugins/table/datatable/datatables.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('plugins/table/datatable/dt-global_style.css') }}">
 
 @livewireStyles

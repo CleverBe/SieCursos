@@ -45,6 +45,8 @@ class InscripcionesController extends Component
 
     private $pagination = 15;
 
+    public $promedioNotas;
+
     protected $paginationTheme = 'bootstrap';
 
 
@@ -65,6 +67,8 @@ class InscripcionesController extends Component
         $this->domingo =  $this->horario_obj->domingo != 'NO' ? $this->horario_obj->domingo . ' ' : '';
 
         $this->dias = $this->lunes . $this->martes . $this->miercoles . $this->jueves . $this->viernes . $this->sabado . $this->domingo;
+
+        $this->promedioNotas = 0;
     }
     // resetear paginacion cuando se busca un elemento en otra pagina que no sea la primera
     public function updatingSearch()
@@ -100,6 +104,8 @@ class InscripcionesController extends Component
             ->where('h.id', $this->horario_obj->id)
             ->orderBy('nombreAlumno')
             ->paginate($this->pagination);
+
+        $this->promedioNotas = count($inscripciones) > 0 ? $inscripciones->sum('nota_final') / count($inscripciones) : 0;
 
         $fecha_actual = date("Y-m-d");
 
@@ -187,7 +193,8 @@ class InscripcionesController extends Component
             'name' => $this->nombre,
             'email' => $this->email,
             'profile' => 'STUDENT',
-            'password' => bcrypt($this->cedula)
+            'password' => bcrypt($this->cedula),
+            'image' => 'noimage.png'
         ]);
 
         if ($user->alumno) {

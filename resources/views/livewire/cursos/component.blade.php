@@ -20,13 +20,11 @@
                         <input type="text" wire:model="search" placeholder="Buscar" class="form-control">
                     </div>
                 </div>
-                <div class="col-sm-12 col-md-2">
-                    <div class="form-group">
-                        <h6 class="form-control"><strong>Area : </strong></h6>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-2">
-                    <div class="form-group">
+                <div class="col-sm-12 col-md-3">
+                    <div class="input-group">
+                        <div class="input-group-append">
+                            <span class="input-group-text">Area</span>
+                        </div>
                         <x-select wire:model='areaFiltro'>
                             <option value="">Todas</option>
                             @foreach ($areas as $area)
@@ -97,7 +95,6 @@
         </div>
     </div>
     @include('livewire.cursos.form')
-    @include('livewire.cursos.imagenModal')
 </div>
 
 <script>

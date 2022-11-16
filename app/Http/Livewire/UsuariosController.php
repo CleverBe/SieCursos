@@ -18,9 +18,11 @@ class UsuariosController extends Component
 
     public  $search, $selected_id, $selected_user;
     public  $pageTitle, $componentName;
-    public $nombre, $cedula, $telefono, $email, $password, $profile, $status;
+    public $nombre, $cedula, $telefono, $email, $password, $profile, $status, $image;
     public $rolefiltro;
     private $pagination = 10;
+
+    public $identificador;
 
     /* public function paginationView()
     {
@@ -37,6 +39,7 @@ class UsuariosController extends Component
         $this->selected_user = 0;
         $this->profile = 'Elegir';
         $this->rolefiltro = 'PROFESSOR';
+        $this->identificador = rand();
     }
     // resetear paginacion cuando se busca un elemento en otra pagina que no sea la primera
     public function updatingSearch()
@@ -131,6 +134,15 @@ class UsuariosController extends Component
                 ]);
             }
 
+            if ($this->image) {
+                $customFileName = uniqid() . '_.' . $this->image->extension();
+                $this->image->storeAs('public/usuarios', $customFileName);
+            } else {
+                $customFileName = 'noimage.png';
+            }
+            $user->image = $customFileName;
+            $user->save();
+
             $user->syncRoles($this->profile);
 
             DB::commit();
@@ -214,6 +226,20 @@ class UsuariosController extends Component
             'telefono' => $this->telefono,
         ]);
 
+        if ($this->image) {
+            $customFileName = uniqid() . '_.' . $this->image->extension();
+            $this->image->storeAs('public/usuarios', $customFileName);
+            $imageTemp = $usuario->image;
+            $usuario->image = $customFileName;
+            $usuario->save();
+
+            if ($imageTemp != 'noimage.png') {
+                if (file_exists('storage/usuarios/' . $imageTemp)) {
+                    unlink('storage/usuarios/' . $imageTemp);
+                }
+            }
+        }
+
         $this->resetUI();
         $this->emit('item-updated', 'Usuario actualizado');
     }
@@ -221,11 +247,17 @@ class UsuariosController extends Component
 
     public function Destroy(User $usuario)
     {
+        $imageName = $usuario->image;
+        if ($imageName != null) {
+            unlink('storage/usuarios/' . $imageName);
+        }
+
         if ($usuario->profile == 'PROFESSOR') {
             $tipoUsuario = Professor::find($usuario->professor->id);
         } else {
             $tipoUsuario = Admin::find($usuario->admin->id);
         }
+
         $tipoUsuario->delete();
 
         $usuario->delete();
@@ -239,7 +271,8 @@ class UsuariosController extends Component
         $this->selected_id = 0;
         $this->selected_user = 0;
         $this->profile = 'Elegir';
-        $this->reset(['nombre', 'cedula', 'telefono', 'email', 'password']);
+        $this->reset(['nombre', 'cedula', 'telefono', 'email', 'password', 'image']);
+        $this->identificador = rand();
         $this->resetValidation();
     }
 }

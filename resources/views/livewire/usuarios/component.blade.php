@@ -49,6 +49,7 @@
                                 <th class="table-th text-withe text-center">TELEFONO</th>
                                 <th class="table-th text-withe text-center">CEDULA</th>
                                 <th class="table-th text-withe text-center">CORREO ELECTRÓNICO</th>
+                                <th class="table-th text-withe text-center">IMAGEN</th>
                                 <th class="table-th text-withe text-center">ESTADO</th>
                                 <th class="table-th text-withe text-center">ACCIONES</th>
                             </tr>
@@ -76,6 +77,12 @@
                                     </td>
                                     <td>
                                         <h6 class="text-center">{{ $usuario->email }}</h6>
+                                    </td>
+                                    <td class="text-center">
+                                        <span>
+                                            <img src="{{ asset('storage/usuarios/' . $usuario->image) }}"
+                                                alt="imagen de ejemplo" height="120" width="150" class="rounded">
+                                        </span>
                                     </td>
                                     <td>
                                         <h6 class="text-center">

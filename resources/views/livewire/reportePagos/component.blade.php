@@ -54,7 +54,7 @@
                             </select>
                         </div>
                     </div>
-                    {{ $reportType }}
+
                     <div class="col-sm-12 col-md-4">
                         <h6>Fecha desde</h6>
                         <div class="form-group">
@@ -134,6 +134,18 @@
                                         </tr>
                                     @endforelse
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2">
+                                            <h5 class="text-dark-right">Total
+                                            </h5>
+                                        </th>
+                                        <th>
+                                            <h5 class="text-dark text-center">
+                                                {{ number_format($total), 2 }}</h5>
+                                        </th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -142,7 +154,6 @@
             </div>
         </div>
     </div>
-    {{-- @include('livewire.reporteCursos.modal_details') --}}
 </div>
 
 @section('javascript')

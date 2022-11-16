@@ -10,8 +10,8 @@ use Livewire\Component;
 
 class ReportePagosController extends Component
 {
-    public $componentName, $data, $details, $reportType,
-        $periodoFiltro, $dateFrom, $dateTo;
+    public $componentName, $data, $reportType,
+        $periodoFiltro, $dateFrom, $dateTo, $total;
 
     public $cursoFiltro, $horarioFiltro;
 
@@ -21,8 +21,8 @@ class ReportePagosController extends Component
     {
         $this->componentName = 'Reporte de pagos';
         $this->data = [];
-        $this->details = [];
-        /* $this->reportType = '0'; */  //arreglar
+        $this->reportType = '0';
+        $this->total = 0;
         $this->periodoFiltro = date('Y-m', time());
         $this->cursos = Asignatura::where('estado', 'ACTIVO')->get();
         $this->horarios = [];
@@ -48,7 +48,8 @@ class ReportePagosController extends Component
             $this->horarios = Horario::with('aula')->where('asignatura_id', $this->cursoFiltro)->get();
         }
 
-        return view('livewire.reportePagos.component')->extends('layouts.theme.app')
+        return view('livewire.reportePagos.component')
+            ->extends('layouts.theme.app')
             ->section('content');
     }
 
@@ -92,5 +93,6 @@ class ReportePagosController extends Component
             })
             ->whereBetween('pagos.fecha_pago', [$from, $to])
             ->get();
+        $this->total = count($this->data) > 0 ? $this->data->sum('monto') : 0;
     }
 }

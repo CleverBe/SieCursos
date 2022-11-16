@@ -9,10 +9,9 @@ use Livewire\Component;
 
 class ReporteCursosController extends Component
 {
-    public $componentName, $data, $details, $sumDetails, $countDetails, $reportType,
-        $userId, $periodoFiltro, $saleId;
+    public $componentName, $data, $reportType, $promedioNotas;
 
-    public $cursoFiltro, $horarioFiltro;
+    public $cursoFiltro, $horarioFiltro, $periodoFiltro;
 
     public $cursos, $horarios;
 
@@ -20,12 +19,8 @@ class ReporteCursosController extends Component
     {
         $this->componentName = 'Reporte de estudiantes';
         $this->data = [];
-        $this->details = [];
-        $this->sumDetails = 0;
-        $this->countDetails = 0;
         $this->reportType = 0;
-        $this->userId = 0;
-        $this->saleId = 0;
+        $this->promedioNotas = 0;
         $this->periodoFiltro = date('Y-m', time());
         $this->cursos = Asignatura::where('estado', 'ACTIVO')->get();
         $this->horarios = [];
@@ -79,6 +74,8 @@ class ReporteCursosController extends Component
                 $query->where('h.id', $this->horarioFiltro);
             })
             ->get();
+
+        $this->promedioNotas = count($this->data) > 0 ? $this->data->sum('nota_final') / count($this->data) : 0;
 
         if ($this->cursoFiltro) {
             $this->horarios = Horario::with('aula')->where('asignatura_id', $this->cursoFiltro)->get();

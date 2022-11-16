@@ -297,7 +297,8 @@
         <div class="dropdown-menu position-absolute animated fadeInUp" aria-labelledby="userProfileDropdown">
             <div class="user-profile-section">
                 <div class="media mx-auto">
-                    <img src="{{ asset('assets/img/90x90.jpg') }}" class="img-fluid mr-2" alt="avatar">
+                    <img src="{{ asset('storage/usuarios/' . auth()->user()->image) }}" class="img-fluid mr-2"
+                        alt="avatar">
                     <div class="media-body">
                         @if (auth()->user()->profile == 'PROFESSOR')
                             <h5>{{ auth()->user()->professor->nombre }}</h5>

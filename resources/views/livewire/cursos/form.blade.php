@@ -47,7 +47,7 @@
             <div class="col-sm-12 col-md-6">
                 <div class="form-group">
                     <x-label texto="Imagen" />
-                    <input type="file" class="form-control-file" wire:model.defer="image">
+                    <input id="{{ $identificador }}" type="file" class="form-control-file" wire:model.defer="image">
                 </div>
             </div>
             @if ($image)

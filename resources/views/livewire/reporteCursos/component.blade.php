@@ -104,6 +104,18 @@
                                         </tr>
                                     @endforelse
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="7">
+                                            <h5 class="text-dark-right">Promedio de nota de los estudiantes
+                                            </h5>
+                                        </td>
+                                        <td>
+                                            <h5 class="text-dark text-center">
+                                                {{ number_format($promedioNotas), 2 }}</h5>
+                                        </td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>

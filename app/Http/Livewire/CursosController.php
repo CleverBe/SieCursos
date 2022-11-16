@@ -18,6 +18,8 @@ class CursosController extends Component
     private $pagination = 5;
     public $areaFiltro, $areas;
 
+    public $identificador;
+
     protected $paginationTheme = 'bootstrap';
 
     public function mount()
@@ -26,6 +28,7 @@ class CursosController extends Component
         $this->componentName = 'Cursos';
         $this->selected_id = 0;
         $this->areas = Area::where('estado', 'ACTIVO')->get();
+        $this->identificador = rand();
     }
     // resetear paginacion cuando se busca un elemento en otra pagina que no sea la primera
     public function updatingSearch()
@@ -154,6 +157,7 @@ class CursosController extends Component
     {
         $this->selected_id = 0;
         $this->reset(['nombre', 'descripcion', 'estado', 'area_id', 'image']);
+        $this->identificador = rand();
         $this->resetValidation();
     }
 }

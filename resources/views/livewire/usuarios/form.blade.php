@@ -85,13 +85,20 @@
                     </div>
                 </div>
             @endif
+            <div class="col-sm-12 col-md-6">
+                <div class="form-group">
+                    <x-label texto="Imagen" />
+                    <input id="{{ $identificador }}" type="file" class="form-control-file" wire:model.defer="image">
+                </div>
+            </div>
         </div>
     </x-slot>
     <x-slot name="footer">
         @if ($selected_id < 1)
-            <x-button wire:click.prevent="Store()" wire:loading.attr="disabled" wire:target="Store" texto="GUARDAR" />
+            <x-button wire:click.prevent="Store()" wire:loading.attr="disabled" wire:target="Store,image"
+                texto="GUARDAR" />
         @else
-            <x-button wire:click.prevent="Update()" wire:loading.attr="disabled" wire:target="Update"
+            <x-button wire:click.prevent="Update()" wire:loading.attr="disabled" wire:target="Update,image"
                 texto="ACTUALIZAR" />
         @endif
         <button class="btn" wire:click="resetUI()" data-dismiss="modal"><i class="flaticon-cancel-12"></i>

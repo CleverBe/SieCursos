@@ -3,9 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
-use App\Models\Area;
-use App\Models\Asignatura;
-use App\Models\Aula;
 use App\Models\Professor;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -26,7 +23,8 @@ class UserSeeder extends Seeder
             'cedula' => '999999999',
             'profile' => 'PROFESSOR',
             'status' => 'ACTIVE',
-            'password' => bcrypt('123')
+            'password' => bcrypt('123'),
+            'image' => 'noimage.png'
         ]);
         Professor::create([
             'nombre' => 'Por Asignar',
@@ -40,7 +38,8 @@ class UserSeeder extends Seeder
             'cedula' => '9406795',
             'profile' => 'PROFESSOR',
             'status' => 'ACTIVE',
-            'password' => bcrypt('123')
+            'password' => bcrypt('123'),
+            'image' => 'noimage.png'
         ]);
         Professor::create([
             'nombre' => 'Clever Bernal',
@@ -54,26 +53,24 @@ class UserSeeder extends Seeder
             'cedula' => '82827788',
             'profile' => 'ADMIN',
             'status' => 'ACTIVE',
-            'password' => bcrypt('123')
+            'password' => bcrypt('123'),
+            'image' => 'noimage.png'
         ]);
         Admin::create([
             'nombre' => 'Carlos',
-            'telefono' => '',
+            'telefono' => '78451245',
             'user_id' => $administrador->id,
         ]);
 
         $roles = [
             [
                 'name' => 'ADMIN',
-                'guard_name' => 'web'
             ],
             [
                 'name' => 'PROFESSOR',
-                'guard_name' => 'web'
             ],
             [
                 'name' => 'STUDENT',
-                'guard_name' => 'web'
             ],
         ];
 
@@ -84,38 +81,5 @@ class UserSeeder extends Seeder
         $usuario->syncRoles('PROFESSOR');
         $porAsignar->syncRoles('PROFESSOR');
         $administrador->syncRoles('ADMIN');
-
-        // AULAS
-        Aula::create([
-            'codigo' => 'A22',
-            'CAPACIDAD' => 14,
-        ]);
-        Aula::create([
-            'codigo' => 'B12',
-            'CAPACIDAD' => 10,
-        ]);
-        // AREAS
-        Area::create([
-            'nombre' => 'Marketing'
-        ]);
-        Area::create([
-            'nombre' => 'Electronica'
-        ]);
-        Area::create([
-            'nombre' => 'Sistemas'
-        ]);
-        // ASIGNATURAS
-        Asignatura::create([
-            'nombre' => 'Mantenimiento y reparación de celulares',
-            'descripcion' => 'Aprende a diagnosticar y reparar fallas de hardware de celualres, cambio de componentes, cambio de pantallas.',
-            'image' => 'reparacionCelulares.PNG',
-            'area_id' => 2,
-        ]);
-        Asignatura::create([
-            'nombre' => 'Photoshop desde 0',
-            'descripcion' => 'Aprende a hacer diseños únicos en este curso práctico desde 0.',
-            'image' => 'photoshopdesde0.jpg',
-            'area_id' => 1,
-        ]);
     }
 }
