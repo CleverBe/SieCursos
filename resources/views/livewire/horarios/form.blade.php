@@ -62,16 +62,6 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-sm-6 col-md-6">
-                <div class="form-group">
-                    <x-label texto="Periodo" />
-                    <input class="form-control" type="month" wire:model.defer="periodo"
-                        {{ $selected_id > 0 ? 'disabled' : '' }}>
-                    @error('periodo')
-                        <span class="text-danger er">{{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
             <div class="col-sm-6 col-md-3">
                 <div class="form-group">
                     <x-label texto="Hora inicio" />
@@ -106,6 +96,15 @@
                     <x-label texto="Fecha fin" />
                     <x-input type="date" wire:model.lazy="fecha_fin" />
                     @error('fecha_fin')
+                        <span class="text-danger er">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-6">
+                <div class="form-group">
+                    <x-label texto="Periodo" />
+                    <input class="form-control" type="month" wire:model.defer="periodo" disabled>
+                    @error('periodo')
                         <span class="text-danger er">{{ $message }}</span>
                     @enderror
                 </div>

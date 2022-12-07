@@ -34,13 +34,10 @@ class LoginController extends Controller
 
     public function redirectTo()
     {
-        $user_id = Auth()->user()->id;
-        $user = User::where('profile', 'ADMIN')
-            ->where('id', $user_id)->get()->first();
-
-        $this->redirectTo = $user ? route('horarios') : route('inicioAulas');
-
-        return $this->redirectTo;
+        if (Auth()->user()->profile == 'ADMIN') {
+            return 'horarios';
+        }
+        return 'inicioAulas';
     }
 
     /**

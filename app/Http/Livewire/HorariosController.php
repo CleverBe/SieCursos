@@ -45,6 +45,13 @@ class HorariosController extends Component
         $this->aulas = Aula::where('estado', 'ACTIVO')->get();
         $this->profesores = Professor::with('user')
             ->whereRelation('user', 'status', 'ACTIVE')->get();
+        // cargar en el filtro el periodo vigente mas viejo
+        $periodoActual = Horario::where('estado', 'VIGENTE')->orderBy('periodo')->get()->first();
+        if ($periodoActual) {
+            $this->periodoFiltro = $periodoActual->periodo;
+        } else {
+            $this->periodoFiltro = date('Y-m', time());
+        }
     }
     // resetear paginacion cuando se busca un elemento en otra pagina que no sea la primera
     public function updatingSearch()
@@ -54,13 +61,7 @@ class HorariosController extends Component
 
     public function render()
     {
-        $periodoActual = Horario::where('estado', 'VIGENTE')->orderBy('periodo')->get()->first();
-        if ($periodoActual) {
-            $this->periodoFiltro = $periodoActual->periodo;
-        } else {
-            $this->periodoFiltro = date('Y-m', time());
-        }
-
+        // consulta para ver los horarios
         $horarios = Horario::with('asignatura', 'aula', 'professor', 'alumnohorario', 'alumnos', 'materials')
             ->select(
                 'horarios.*',
@@ -87,9 +88,8 @@ class HorariosController extends Component
         }
 
         $fecha_actual = date("Y-m-d");
-
+        // mostrar columnas de colores si debe o no algun estudiante
         foreach ($horarios as $value) {
-
             foreach ($value->alumnohorario as $alumnoHor) {
                 $pagosA = Pago::where('alumno_horario_id', $alumnoHor->id)
                     ->where('fecha_limite', '<', $fecha_actual)
@@ -105,7 +105,10 @@ class HorariosController extends Component
                 $value->deudores = 'NO';
             }
         }
-
+        // actualizar periodo segun la fecha de inicio del horario
+        if ($this->fecha_inicio) {
+            $this->periodo = substr($this->fecha_inicio, 0, 7);
+        }
 
         return view('livewire.horarios.component', [
             'horarios' => $horarios,
@@ -595,6 +598,7 @@ class HorariosController extends Component
             'viernes' => $viernes,
             'sabado' => $sabado,
             'domingo' => $domingo,
+            'periodo' => $this->periodo,
             'modalidad' => $this->modalidad,
         ] + $validatedData);
 

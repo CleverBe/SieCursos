@@ -17,8 +17,8 @@
                         <thead>
                             <tr>
                                 <th class="table-th text-withe text-center">#</th>
-                                <th class="table-th text-withe text-center">DESCRIPCION</th>
-                                <th class="table-th text-withe text-center">ACCIONES</th>
+                                <th class="table-th text-withe text-center">NOMBRE DEL PERMISO</th>
+                                {{-- <th class="table-th text-withe text-center">ACCIONES</th> --}}
                             </tr>
                         </thead>
                         <tbody>
@@ -30,8 +30,7 @@
                                     <td>
                                         <h6 class="text-center">{{ $permiso->name }}</h6>
                                     </td>
-
-                                    <td class="text-center">
+                                    {{-- <td class="text-center">
                                         <x-button wire:click="Edit({{ $permiso->id }})" title="Editar">
                                             <i class="far fa-edit"></i>
                                         </x-button>
@@ -39,7 +38,7 @@
                                             title="Eliminar">
                                             <i class="far fa-trash-alt"></i>
                                         </x-button>
-                                    </td>
+                                    </td> --}}
                                 </tr>
                             @empty
                                 <tr>

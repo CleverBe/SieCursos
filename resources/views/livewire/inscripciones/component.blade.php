@@ -116,7 +116,7 @@
                                 </td>
                                 <td>
                                     <h5 class="text-dark text-center">
-                                        {{ number_format($promedioNotas), 2 }}</h5>
+                                        {{ $promedioNotas }}</h5>
                                 </td>
                             </tr>
                         </tfoot>

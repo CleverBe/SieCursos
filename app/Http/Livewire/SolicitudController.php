@@ -18,6 +18,8 @@ class SolicitudController extends Component
     public $nombre_solicitante, $telefono_solicitante, $comprobante, $fecha_transferencia,
         $comentarios, $estado, $moduloSolicitud;
 
+    public $pagos;
+
     public function mount(SolicitudPago $solicitud_id)
     {
         $this->solicitud_id = $solicitud_id;
@@ -35,20 +37,24 @@ class SolicitudController extends Component
         $this->estado = $this->solicitud_id->estado;
 
         $this->componentName = 'Solicitud';
+        $this->pagos = [];
     }
 
     public function render()
     {
-        $pagos = Pago::join('alumno_horario as ah', 'pagos.alumno_horario_id', 'ah.id')
+        $this->pagosListado();
+
+        return view('livewire.solicitudEstudiante.component')
+            ->extends('layouts.theme.app')
+            ->section('content');
+    }
+
+    public function pagosListado()
+    {
+        $this->pagos = Pago::join('alumno_horario as ah', 'pagos.alumno_horario_id', 'ah.id')
             ->select('pagos.*')
             ->where('ah.alumno_id', $this->alumno->alumno_id)
             ->get();
-
-        return view('livewire.solicitudEstudiante.component', [
-            'pagos' => $pagos,
-        ])
-            ->extends('layouts.theme.app')
-            ->section('content');
     }
 
     public function aprobar()
@@ -62,7 +68,7 @@ class SolicitudController extends Component
             'comprobante' => $this->comprobante,
             'fecha_pago' => Carbon::parse(Carbon::now()),
         ]);
-
+        $this->redirect($this->solicitud_id->id);
         $this->emitTo('header-component', 'render');
         $this->emit('item-updated', 'Se aprobó la solicitud');
     }
@@ -71,6 +77,7 @@ class SolicitudController extends Component
     {
         $this->solicitud_id->estado = 'RECHAZADO';
         $this->solicitud_id->save();
+        $this->redirect($this->solicitud_id->id);
         $this->emitTo('header-component', 'render');
         $this->emit('item-updated', 'Se rechazó la solicitud');
     }

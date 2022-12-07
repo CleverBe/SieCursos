@@ -100,11 +100,13 @@ class MiPlanDePagosController extends Component
             'telefono_solicitante' => 'required',
             'comprobante' => 'required',
             'fecha_transferencia' => 'required',
+            'comentarios' => 'required',
         ];
         $messages = [
             'telefono_solicitante.required' => 'El teléfono es requerido.',
             'comprobante.required' => 'El comprobante es requerido.',
             'fecha_transferencia.required' => 'La fecha de la transferncia es requerida.',
+            'comentarios.required' => 'Este campo es obligatorio.',
         ];
         $this->validate($rules, $messages);
 

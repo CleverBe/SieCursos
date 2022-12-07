@@ -3,7 +3,7 @@
         <ul class="menu-categories">
             @role('ADMIN')
                 <li class="menu {{ request()->routeIs('horarios') || request()->routeIs('usuarios') ? 'active' : '' }}">
-                    <a href="#dashboard" data-active="true" class="menu-toggle">
+                    <a href="#admin" data-active="false" class="menu-toggle">
                         <div class="base-menu">
                             <div class="base-icons">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -27,7 +27,7 @@
             @endcan
             @role('PROFESSOR')
                 <li class="menu">
-                    <a href="#forms" data-active="false" class="menu-toggle">
+                    <a href="#professor" data-active="false" class="menu-toggle">
                         <div class="base-menu">
                             <div class="base-icons">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -51,7 +51,7 @@
             @endcan
             @role('STUDENT')
                 <li class="menu">
-                    <a href="#tables" data-active="false" class="menu-toggle">
+                    <a href="#student" data-active="false" class="menu-toggle">
                         <div class="base-menu">
                             <div class="base-icons">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -78,7 +78,7 @@
 
     <div id="compact_submenuSidebar" class="submenu-sidebar">
 
-        <div class="submenu" id="dashboard">
+        <div class="submenu" id="admin">
             <ul class="submenu-list" data-parent-element="#dashboard">
                 <li>
                     <a href="{{ url('usuarios') }}"><svg xmlns="http://www.w3.org/2000/svg" width="24"
@@ -130,17 +130,6 @@
                         </svg> Horarios </a>
                 </li>
                 <li>
-                    <a href="{{ url('solicitudesPagos') }}"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="feather feather-user-plus">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="8.5" cy="7" r="4"></circle>
-                            <line x1="20" y1="8" x2="20" y2="14"></line>
-                            <line x1="23" y1="11" x2="17" y2="11"></line>
-                        </svg> Solicitudes de pago </a>
-                </li>
-                <li>
                     <a href="{{ url('reportesCursos') }}"><svg xmlns="http://www.w3.org/2000/svg" width="24"
                             height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -159,6 +148,17 @@
                             <line x1="12" y1="20" x2="12" y2="4"></line>
                             <line x1="6" y1="20" x2="6" y2="14"></line>
                         </svg> Reporte pagos </a>
+                </li>
+                <li>
+                    <a href="{{ url('solicitudesPagos') }}"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-user-plus">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                            <line x1="23" y1="11" x2="17" y2="11"></line>
+                        </svg> Solicitudes de pago </a>
                 </li>
                 <li>
                     <a href="{{ url('permisos') }}"><svg xmlns="http://www.w3.org/2000/svg" width="24"
@@ -191,7 +191,7 @@
             </ul>
         </div>
 
-        <div class="submenu" id="forms">
+        <div class="submenu" id="professor">
             <ul class="submenu-list" data-parent-element="#forms">
                 <li>
                     <a href="{{ url('inicioAulas') }}"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg"
@@ -205,7 +205,7 @@
             </ul>
         </div>
 
-        <div class="submenu" id="tables">
+        <div class="submenu" id="student">
             <ul class="submenu-list" data-parent-element="#tables">
                 <li>
                     <a href="{{ url('inicioAulas') }}"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg"

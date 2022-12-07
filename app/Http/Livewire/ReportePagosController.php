@@ -26,7 +26,7 @@ class ReportePagosController extends Component
         $this->periodoFiltro = date('Y-m', time());
         $this->cursos = Asignatura::where('estado', 'ACTIVO')->get();
         $this->horarios = [];
-        $this->dateFrom = Carbon::parse(Carbon::now())->format('Y-m-d');
+        $this->dateFrom = Carbon::parse(Carbon::now())->format('d-m-Y');
         $this->dateTo = Carbon::parse(Carbon::now())->format('Y-m-d');
     }
 

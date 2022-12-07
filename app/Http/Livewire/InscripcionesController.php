@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Alumno;
 use App\Models\AlumnoHorario;
+use App\Models\Asistencia;
 use App\Models\Horario;
 use App\Models\Pago;
 use App\Models\SolicitudPago;
@@ -338,6 +339,10 @@ class InscripcionesController extends Component
                 $solic->delete();
             }
             $pago->delete();
+        }
+        $asistencias = Asistencia::where('alumno_horario_id', $alumno_horario->id)->get();
+        foreach ($asistencias as $asist) {
+            $asist->delete();
         }
 
         $alumno->horarios()->detach($this->horario_obj->id);

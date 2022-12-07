@@ -21,7 +21,7 @@
             <tr>
                 <td width="30%" class="text-center"
                     style="vertical-align: top; padding-top:10px; position:relative;">
-                    <img src="assets/img/logo.jpg" alt="" class="invoice-logo">
+                    <img src="{{ asset('assets/img/logo.jpg') }}" alt="" class="invoice-logo">
                 </td>
 
                 <td width="70%" class="text-left text-company" style="vertical-align: top; padding-top:10px;">

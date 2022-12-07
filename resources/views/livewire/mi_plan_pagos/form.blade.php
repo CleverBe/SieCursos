@@ -30,6 +30,9 @@
                     <input type="file" class="custom-file-input form-control" wire:model.defer="comprobante"
                         accept="image/*">
                     <label class="custom-file-label">Comprobante {{ $comprobante }}</label>
+                    @error('comprobante')
+                        <span class="text-danger er">{{ $message }}</span>
+                    @enderror
                 </div>
             </div>
             <div class="col-sm-12 col-md-6">
