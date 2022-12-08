@@ -326,6 +326,8 @@ class InscripcionesController extends Component
             'fecha_inscripcion' => $this->fecha_inscripcion,
         ]);
 
+        $usuario->syncRoles('STUDENT');
+
         $this->resetUI();
         $this->emit('item-updated', 'Datos del alumno actualizados');
     }

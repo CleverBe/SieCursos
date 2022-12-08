@@ -27,5 +27,11 @@ class AsignaturaSeeder extends Seeder
             'image' => 'photoshopdesde0.jpg',
             'area_id' => 1,
         ]);
+        Asignatura::create([
+            'nombre' => 'Herramientas Office nivel básico',
+            'descripcion' => 'Aprende a utilizar las herramientas de Office en este curso práctico desde 0.',
+            'image' => 'office.jpg',
+            'area_id' => 3,
+        ]);
     }
 }

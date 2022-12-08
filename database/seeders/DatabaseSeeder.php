@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Asignatura;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -19,6 +18,8 @@ class DatabaseSeeder extends Seeder
         $this->call(AulaSeeder::class);
         $this->call(AreaSeeder::class);
         $this->call(AsignaturaSeeder::class);
+        $this->call(HorarioSeeder::class);
+
         $this->call(PermisosSeeder::class);
     }
 }

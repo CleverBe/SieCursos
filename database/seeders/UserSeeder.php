@@ -20,10 +20,10 @@ class UserSeeder extends Seeder
         $porAsignar = User::create([
             'email' => '123@gmail.com',
             'name' => 'Por Asignar',
-            'cedula' => '999999999',
+            'cedula' => '99999999',
             'profile' => 'PROFESSOR',
             'status' => 'ACTIVE',
-            'password' => bcrypt('123'),
+            'password' => bcrypt('5894522'),
             'image' => 'noimage.png'
         ]);
         Professor::create([
@@ -32,9 +32,9 @@ class UserSeeder extends Seeder
             'user_id' => $porAsignar->id,
         ]);
 
-        $usuario = User::create([
-            'email' => 'cleverbernal123@gmail.com',
-            'name' => 'Clever Bernal',
+        $profesor1 = User::create([
+            'email' => 'favioVillaroel@gmail.com',
+            'name' => 'Favio Villaroel',
             'cedula' => '9406795',
             'profile' => 'PROFESSOR',
             'status' => 'ACTIVE',
@@ -42,22 +42,37 @@ class UserSeeder extends Seeder
             'image' => 'noimage.png'
         ]);
         Professor::create([
-            'nombre' => 'Clever Bernal',
+            'nombre' => 'Favio Villaroel',
             'telefono' => '6187236',
-            'user_id' => $usuario->id,
+            'user_id' => $profesor1->id,
+        ]);
+
+        $profesor2 = User::create([
+            'email' => 'gustavoQuisbert@gmail.com',
+            'name' => 'Gustavo Quisbert',
+            'cedula' => '6622551',
+            'profile' => 'PROFESSOR',
+            'status' => 'ACTIVE',
+            'password' => bcrypt('123'),
+            'image' => 'noimage.png'
+        ]);
+        Professor::create([
+            'nombre' => 'Gustavo Quisbert',
+            'telefono' => '69451278',
+            'user_id' => $profesor2->id,
         ]);
 
         $administrador = User::create([
             'email' => 'admin@admin.com',
-            'name' => 'Carlos',
-            'cedula' => '82827788',
+            'name' => 'Clever Bernal Terrazas',
+            'cedula' => '8282778',
             'profile' => 'ADMIN',
             'status' => 'ACTIVE',
             'password' => bcrypt('123'),
             'image' => 'noimage.png'
         ]);
         Admin::create([
-            'nombre' => 'Carlos',
+            'nombre' => 'Clever Bernal Terrazas',
             'telefono' => '78451245',
             'user_id' => $administrador->id,
         ]);
@@ -78,7 +93,8 @@ class UserSeeder extends Seeder
             Role::create($rol);
         }
 
-        $usuario->syncRoles('PROFESSOR');
+        $profesor1->syncRoles('PROFESSOR');
+        $profesor2->syncRoles('PROFESSOR');
         $porAsignar->syncRoles('PROFESSOR');
         $administrador->syncRoles('ADMIN');
     }
