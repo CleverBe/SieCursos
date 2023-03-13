@@ -41,6 +41,10 @@ class HorariosController extends Component
 
     public function mount()
     {
+        if(Auth()->user()->profile!='ADMIN'){
+            $this->redirect('/inicioAulas');
+        }
+
         $this->asignaturas = Asignatura::where('estado', 'ACTIVO')->get();
         $this->aulas = Aula::where('estado', 'ACTIVO')->get();
         $this->profesores = Professor::with('user')

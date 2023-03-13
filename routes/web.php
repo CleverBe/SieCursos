@@ -48,7 +48,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/aulas', AulasController::class)->name('aulas')->middleware('permission:ver_aulas');
     Route::get('/areasCursos', AreasCursosController::class)->name('areasCursos')->middleware('permission:ver_areas');
     Route::get('/cursos', CursosController::class)->name('cursos')->middleware('permission:ver_cursos');
-    Route::get('/horarios', HorariosController::class)->name('horarios')->middleware('permission:ver_horarios');
+    Route::get('/horarios', HorariosController::class)->name('horarios');
     Route::get('/inscripciones/{horario_id}', InscripcionesController::class)->name('inscripciones')->middleware('permission:ver_inscripciones');
     Route::get('/solicitudesPagos', SolicitudesPagosController::class)->name('solicitudesPagos')->middleware('permission:ver_solicitudes');
     Route::get('/solicitud/{solicitud_id}', SolicitudController::class)->name('solicitud')->middleware('permission:ver_solicitud');
