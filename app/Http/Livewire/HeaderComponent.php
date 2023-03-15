@@ -16,7 +16,7 @@ class HeaderComponent extends Component
             $solicitudesPendientes = SolicitudPago::with('pago')->where('estado', '!=', 'PENDIENTE')->get();
         }
 
-        return view('livewire.header-component', [
+        return view('livewire.layouts.theme.header-component', [
             'solicitudesPendientes' => $solicitudesPendientes,
         ]);
     }

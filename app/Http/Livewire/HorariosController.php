@@ -25,7 +25,7 @@ class HorariosController extends Component
         $hora_inicio, $hora_fin, $fecha_inicio, $fecha_fin, $dia_de_cobro,
         $horas_capacitacion, $costo_curso, $costo_matricula = 100;
 
-    public $horario_libre = 'Si', $profesor_libre = 'Si';
+    public $horario_libre = 'Si', $profesor_libre = 'Si', $validacionFechaMes = 'Si';
 
     public $filtroEstado = 'VIGENTE', $cursoFiltro, $periodoFiltro;
 
@@ -41,7 +41,7 @@ class HorariosController extends Component
 
     public function mount()
     {
-        if(Auth()->user()->profile!='ADMIN'){
+        if (Auth()->user()->profile != 'ADMIN') {
             $this->redirect('/inicioAulas');
         }
 
@@ -126,6 +126,30 @@ class HorariosController extends Component
         $this->emit('show-modal', 'show modal!');
         if ($this->selected_id != 0) {
             $this->resetUI();
+        }
+    }
+
+    public function validarFechaMeses()
+    {
+        // Las convertimos a segundos
+        $fechaInicialSegundos = strtotime($this->fecha_inicio);
+        $fechaFinalSegundos = strtotime($this->fecha_fin);
+
+        // Hacemos las operaciones para calcular los dias entre las dos fechas
+        $dias = ($fechaFinalSegundos - $fechaInicialSegundos) / 86400;
+        $cantidadDias = round($dias, 0, PHP_ROUND_HALF_UP);
+        // validar que las fechas cumplan con la duracion de meses con una diferencia de 4 dias mas la cantidad de meses
+
+        $validacion = $this->duracion_meses * 30;
+        if ($cantidadDias < $validacion - ($this->duracion_meses + 4)) {
+            return 'No';
+        } else {
+            return 'Si';
+        }
+        if ($cantidadDias > $validacion + ($this->duracion_meses + 4)) {
+            return 'No';
+        } else {
+            return 'Si';
         }
     }
 
@@ -333,12 +357,16 @@ class HorariosController extends Component
 
     public function Store()
     {
+        if ($this->duracion_meses && $this->fecha_inicio && $this->fecha_fin) {
+            $this->validacionFechaMes = $this->validarFechaMeses();
+        }
+
         $this->validarDiasSeleccionados();
 
-        $this->validarAulaSeleccionada();
-
-        $this->validarProfesorSeleccionado();
-
+        if ($this->hora_inicio && $this->hora_fin) {
+            $this->validarAulaSeleccionada();
+            $this->validarProfesorSeleccionado();
+        }
 
         $validatedData = $this->validate(
             [
@@ -347,7 +375,7 @@ class HorariosController extends Component
                 'hora_fin' => 'required|after_or_equal:hora_inicio',
                 'fecha_inicio' => 'required',
                 'fecha_fin' => 'required|after_or_equal:fecha_inicio',
-                'dia_de_cobro' => 'required|integer|between:1,10',
+                'dia_de_cobro' => 'required|integer|between:1,16',
                 'horas_capacitacion' => 'required|integer|gt:0',
                 'costo_curso' => 'required|integer|gt:0',
                 'costo_matricula' => 'required|integer|gt:0',
@@ -359,6 +387,7 @@ class HorariosController extends Component
                 'dias_seleccionado' => 'not_in:No',
                 'horario_libre' => 'not_in:No',
                 'profesor_libre' => 'not_in:No',
+                'validacionFechaMes' => 'not_in:No',
             ],
             [
                 'periodo.required' => 'Seleccione un periodo.',
@@ -370,7 +399,7 @@ class HorariosController extends Component
                 'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser posterior a la fecha inicial.',
                 'dia_de_cobro.required' => 'El día de cobro es requerido.',
                 'dia_de_cobro.integer' => 'El día debe ser un número.',
-                'dia_de_cobro.between' => 'El día debe ser entre el 1 y el 10.',
+                'dia_de_cobro.between' => 'El día debe ser entre el 1 y el 16.',
                 'horas_capacitacion.required' => 'Las horas de capacitación son requeridas.',
                 'horas_capacitacion.integer' => 'Las horas deben ser un número.',
                 'horas_capacitacion.gt' => 'Las horas deben ser mayor a 0.',
@@ -382,7 +411,7 @@ class HorariosController extends Component
                 'costo_matricula.gt' => 'El costo debe ser mayor a 0.',
                 'duracion_meses.required' => 'La duración del curso es requerida.',
                 'duracion_meses.integer' => 'La duración debe ser un número.',
-                'duracion_meses.between' => 'La duración estar entre de 1 a 10 meses.',
+                'duracion_meses.between' => 'La duración debe estar entre 1 a 10 meses.',
                 'pago_cuota.integer' => 'El pago de cuotas no debe tener decimales',
                 'aula_id.not_in' => 'Seleccione un aula distinta a Elegir.',
                 'professor_id.not_in' => 'Seleccione un profesor distinto a Elegir.',
@@ -390,6 +419,7 @@ class HorariosController extends Component
                 'dias_seleccionado.not_in' => 'Seleccione los dias de clases.',
                 'horario_libre.not_in' => 'El aula seleccionada está ocupada en ese horario.',
                 'profesor_libre.not_in' => 'El profesor seleccionado está ocupado en ese horario.',
+                'validacionFechaMes.not_in' => 'Las fechas no cumplen con la cantidad de meses seleccionados.',
             ],
         );
 
@@ -514,11 +544,16 @@ class HorariosController extends Component
 
     public function Update()
     {
+        if ($this->duracion_meses && $this->fecha_inicio && $this->fecha_fin) {
+            $this->validacionFechaMes = $this->validarFechaMeses();
+        }
+
         $this->validarDiasSeleccionados();
 
-        $this->validarAulaSeleccionada();
-
-        $this->validarProfesorSeleccionado();
+        if ($this->hora_inicio && $this->hora_fin) {
+            $this->validarAulaSeleccionada();
+            $this->validarProfesorSeleccionado();
+        }
 
         $validatedData = $this->validate(
             [
@@ -526,14 +561,16 @@ class HorariosController extends Component
                 'hora_fin' => 'required|after_or_equal:hora_inicio',
                 'fecha_inicio' => 'required',
                 'fecha_fin' => 'required|after_or_equal:fecha_inicio',
-                'dia_de_cobro' => 'required|integer|between:1,10',
+                'dia_de_cobro' => 'required|integer|between:1,16',
                 'horas_capacitacion' => 'required|integer|gt:0',
+                'duracion_meses' => 'required|integer|between:1,10',
                 'pago_cuota' => 'integer',
                 'aula_id' => 'not_in:Elegir',
                 'professor_id' => 'not_in:Elegir',
                 'dias_seleccionado' => 'not_in:No',
                 'horario_libre' => 'not_in:No',
                 'profesor_libre' => 'not_in:No',
+                'validacionFechaMes' => 'not_in:No',
             ],
             [
                 'hora_inicio.required' => 'La hora de inicio es requerido.',
@@ -544,16 +581,20 @@ class HorariosController extends Component
                 'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser posterior a la fecha inicial.',
                 'dia_de_cobro.required' => 'El día de cobro es requerido.',
                 'dia_de_cobro.integer' => 'El día debe ser un número.',
-                'dia_de_cobro.between' => 'El día debe ser entre el 1 y el 10.',
+                'dia_de_cobro.between' => 'El día debe ser entre el 1 y el 16.',
                 'horas_capacitacion.required' => 'Las horas de capacitación son requeridas.',
                 'horas_capacitacion.integer' => 'Las horas deben ser un número.',
                 'horas_capacitacion.gt' => 'Las horas deben ser mayor a 0.',
+                'duracion_meses.required' => 'La duración del curso es requerida.',
+                'duracion_meses.integer' => 'La duración debe ser un número.',
+                'duracion_meses.between' => 'La duración debe estar entre 1 a 10 meses.',
                 'pago_cuota.integer' => 'El pago de cuotas no debe tener decimales',
                 'aula_id.not_in' => 'Seleccione un aula distinta a Elegir.',
                 'professor_id.not_in' => 'Seleccione un profesor distinto a Elegir.',
                 'dias_seleccionado.not_in' => 'Seleccione los dias de clases.',
                 'horario_libre.not_in' => 'El aula seleccionada está ocupada en ese horario.',
                 'profesor_libre.not_in' => 'El profesor seleccionado está ocupado en ese horario.',
+                'validacionFechaMes.not_in' => 'Las fechas no cumplen con la cantidad de meses seleccionados.',
             ],
         );
 
@@ -639,15 +680,7 @@ class HorariosController extends Component
 
     public function resetUI()
     {
-        $this->reset([
-            'selected_id',
-            'asignatura_id', 'aula_id', 'modalidad', 'professor_id', 'periodo', 'dias_seleccionado', 'lunes', 'martes', 'miercoles',
-            'jueves', 'viernes', 'sabado', 'domingo', 'hora_inicio', 'hora_fin', 'fecha_inicio', 'fecha_fin',
-            'dia_de_cobro',
-            'horario_libre', 'profesor_libre',
-            'listadoEstudiantes',
-        ]);
-
+        $this->resetExcept(['search', 'pageTitle', 'componentName',  'cursoFiltro', 'periodoFiltro', 'filtroEstado', 'asignaturas', 'aulas', 'profesores']);
         $this->resetValidation();
     }
 }

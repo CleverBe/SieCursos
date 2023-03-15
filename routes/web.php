@@ -41,9 +41,16 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/home', function () {
+        $role = Auth()->user()->profile;
+        if ($role == 'ADMIN') {
+            return redirect('/horarios');
+        }
+        return redirect('/inicioAulas');
+    });
     Route::get('/usuarios', UsuariosController::class)->name('usuarios')->middleware('permission:ver_usuarios');
     Route::get('/aulas', AulasController::class)->name('aulas')->middleware('permission:ver_aulas');
     Route::get('/areasCursos', AreasCursosController::class)->name('areasCursos')->middleware('permission:ver_areas');

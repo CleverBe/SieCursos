@@ -18,7 +18,7 @@
             </div>
             <div class="col-sm-12 col-md-6">
                 <div class="form-group">
-                    <x-label texto="Telefono" />
+                    <x-label texto="Teléfono" />
                     <x-input type="text" wire:model.defer="telefono" maxlenght="25" />
                     @error('telefono')
                         <span class="text-danger er">{{ $message }}</span>
@@ -45,7 +45,7 @@
             </div>
             <div class="col-sm-12 col-md-6">
                 <div class="form-group">
-                    <x-label texto="Nombre tutor (opcional)" />
+                    <x-label texto="Nombre del tutor (opcional)" />
                     <x-input type="text" wire:model.defer="tutor" />
                     @error('tutor')
                         <span class="text-danger er">{{ $message }}</span>
@@ -54,7 +54,7 @@
             </div>
             <div class="col-sm-12 col-md-6">
                 <div class="form-group">
-                    <x-label texto="Telefono tutor (opcional)" />
+                    <x-label texto="Teléfono del tutor (opcional)" />
                     <x-input type="text" wire:model.defer="telef_tutor" />
                     @error('telef_tutor')
                         <span class="text-danger er">{{ $message }}</span>

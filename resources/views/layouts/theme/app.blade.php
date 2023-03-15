@@ -29,7 +29,13 @@
         <div class="search-overlay"></div>
 
         <!--  BEGIN SIDEBAR  -->
-        @include('layouts.theme.sidebar')
+        @if (auth()->user()->profile == 'ADMIN')
+            @include('layouts.theme.sidebar')
+        @elseif (auth()->user()->profile == 'PROFESSOR')
+            @include('layouts.theme.sidebarProfessor')
+        @else
+            @include('layouts.theme.sidebarStudent')
+        @endif
         <!--  END SIDEBAR  -->
 
         <!--  BEGIN CONTENT AREA  -->

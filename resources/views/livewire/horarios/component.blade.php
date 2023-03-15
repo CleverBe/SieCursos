@@ -53,7 +53,7 @@
 
             <div class="widget-content">
                 <div class="table-responsive">
-                    <table class="table table-unbordered table-hover mb-4">
+                    <table class="table table-unbordered mb-4">
                         <thead>
                             <tr>
                                 <th class="table-th text-withe text-center">#</th>
@@ -61,8 +61,7 @@
                                 <th class="table-th text-withe text-center">AULA</th>
                                 <th class="table-th text-withe text-center">PROFESOR</th>
                                 <th class="table-th text-withe text-center">ESTUDIANTES</th>
-                                <th class="table-th text-withe text-center">DEBEN</th>
-                                <th class="table-th text-withe text-center">DIAS DE CLASES</th>
+                                <th class="table-th text-withe text-center">DIAS CLASES</th>
                                 <th class="table-th text-withe text-center">HORARIO</th>
                                 <th class="table-th text-withe text-center">FECHA INICIO</th>
                                 <th class="table-th text-withe text-center">FECHA FIN</th>
@@ -84,16 +83,13 @@
                                     <td>
                                         <h6 class="text-center">{{ $horario->professor->nombre }}</h6>
                                     </td>
-                                    <td>
+                                    <td
+                                        @if ($horario->deudores == 'SI') class="table-danger" title="Debe" @else class="table-success" title="Al día" @endif>
                                         <h6 class="text-center">
                                             <x-button wire:click="MostrarEstudiantes({{ $horario->id }})"
                                                 title="Ver estudiantes"
                                                 texto="{{ $horario->alumnohorario->count() }}" />
                                         </h6>
-                                    </td>
-                                    <td
-                                        @if ($horario->deudores == 'SI') class="table-danger" title="Debe" @else class="table-success" title="Al día" @endif>
-                                        <h6 class="text-center">{{ $horario->deudores }}</h6>
                                     </td>
                                     <td>
                                         <h6 class="text-center">

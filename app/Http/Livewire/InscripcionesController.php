@@ -383,13 +383,14 @@ class InscripcionesController extends Component
     {
         $validatedData = $this->validate(
             [
-                'monto' => 'required|numeric|gt:0',
+                'monto' => "required|numeric|gt:0|lte:{$this->a_pagar}",
                 'fecha_pago' => 'required',
             ],
             [
                 'monto.required' => 'El monto es requerido.',
                 'monto.numeric' => 'El monto debe ser de tipo numérico.',
                 'monto.gt' => 'El monto debe ser mayor a 0.',
+                'monto.lte' => "El monto debe ser menor o igual a {$this->a_pagar}.",
                 'fecha_pago.required' => 'La fecha de pago es requerida.',
             ],
         );
@@ -435,14 +436,16 @@ class InscripcionesController extends Component
     public function UpdateNotas()
     {
         $rules = [
-            'primera_nota' => 'required|integer',
-            'segunda_nota' => 'required|integer',
+            'primera_nota' => 'required|integer|lte:100',
+            'segunda_nota' => 'required|integer|lte:100',
         ];
         $messages = [
             'primera_nota.required' => 'La nota es requerida.',
             'primera_nota.integer' => 'La nota debe ser un número.',
+            'primera_nota.lte' => 'La nota máxima es de 100.',
             'segunda_nota.required' => 'La nota es requerida.',
             'segunda_nota.integer' => 'La nota debe ser un número.',
+            'segunda_nota.lte' => 'La nota máxima es de 100.',
         ];
         $this->validate($rules, $messages);
 
