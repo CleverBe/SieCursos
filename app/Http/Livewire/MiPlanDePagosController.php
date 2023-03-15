@@ -84,7 +84,7 @@ class MiPlanDePagosController extends Component
 
     public function export($nombre)
     {
-        return response()->download(public_path('storage/pagos/' . $nombre));
+        return response()->download(storage_path('app/public/pagos/' . $nombre));
     }
 
     public function SolicitarPago(Pago $pago)

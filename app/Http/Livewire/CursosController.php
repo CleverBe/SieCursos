@@ -81,11 +81,10 @@ class CursosController extends Component
         if ($this->image) {
             $customFileName = uniqid() . '_.' . $this->image->extension();
             $this->image->storeAs('public/asignaturas', $customFileName);
+            Asignatura::create($validatedData + ['image' => $customFileName]);
         } else {
-            $customFileName = 'noimage.jpg';
+            Asignatura::create($validatedData);
         }
-
-        Asignatura::create($validatedData + ['image' => $customFileName]);
 
         $this->resetUI();
         $this->emit('item-added', 'Asignatura registrada');
@@ -128,8 +127,7 @@ class CursosController extends Component
             $imageTemp = $asignatura->image;
             $asignatura->image = $customFileName;
             $asignatura->save();
-
-            if ($imageTemp != 'noimage.jpg') {
+            if ($imageTemp != 'noimage.png') {
                 if (file_exists('storage/asignaturas/' . $imageTemp)) {
                     unlink('storage/asignaturas/' . $imageTemp);
                 }
@@ -145,7 +143,7 @@ class CursosController extends Component
     public function Destroy(Asignatura $asignatura)
     {
         $imageName = $asignatura->image;
-        if ($imageName != null) {
+        if ($imageName != 'noimage.png') {
             unlink('storage/asignaturas/' . $imageName);
         }
         $asignatura->delete();

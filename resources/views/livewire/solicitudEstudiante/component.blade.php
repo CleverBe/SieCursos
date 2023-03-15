@@ -7,18 +7,25 @@
                 </h4>
                 <ul class="tabs tab-pills">
                     @if ($estado == 'PENDIENTE')
-                        <x-button onclick="ConfirmAprobar()" texto="Aprobar" title="Aprobar" />
-                        <x-button onclick="ConfirmRechazar()" texto="Rechazar" title="Rechazar" />
+                    <x-button onclick="ConfirmAprobar()" texto="Aprobar" title="Aprobar" />
+                    <x-button onclick="ConfirmRechazar()" texto="Rechazar" title="Rechazar" />
                     @endif
                 </ul>
             </div>
             <div class="mb-2">
-                <h6 class="card-title">
+                <h6 class="card-title text-center">
                     Estudiante: <b>{{ $nombre_solicitante }}</b><br>
                     Teléfono estudiante: <b>{{ $telefono_solicitante }}</b><br>
-                    Comprobante: <br>
-                    <img src="{{ asset('storage/pagos/' . $comprobante) }}" alt="widget-card-2"
-                        style="max-width:500px;width:100%"><br>
+                    <img src="{{ asset('storage/pagos/' . $comprobante) }}" alt="widget-card-2" style="max-width:500px;width:100%"><br>
+                    <x-button wire:click="export('{{ $comprobante }}')" texto="Descargar" color="primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download-cloud">
+                            <polyline points="8 17 12 21 16 17"></polyline>
+                            <line x1="12" y1="12" x2="12" y2="21">
+                            </line>
+                            <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29">
+                            </path>
+                        </svg>
+                    </x-button> <br>
                     Fecha de transferencia:
                     <b>{{ \Carbon\Carbon::parse($fecha_transferencia)->format('d/m/Y H:i') }}</b><br>
                     Comentario: <b>{{ $comentarios }}</b><br>
@@ -42,34 +49,34 @@
                         </thead>
                         <tbody>
                             @foreach ($pagos as $pago)
-                                <tr>
-                                    <td>
-                                        <h6 class="text-center">{{ $pago->modulo }}</h6>
-                                    </td>
-                                    <td>
-                                        <h6 class="text-center">{{ $pago->monto }}</h6>
-                                    </td>
-                                    <td>
-                                        <h6 class="text-center">{{ $pago->a_pagar }}</h6>
-                                    </td>
-                                    <td>
-                                        <h6 class="text-center">
-                                            {{ \Carbon\Carbon::parse($pago->fecha_limite)->format('d/m/Y') }}
-                                        </h6>
-                                    </td>
-                                    <td>
-                                        <h6 class="text-center">
-                                            @if ($pago->fecha_pago)
-                                                {{ \Carbon\Carbon::parse($pago->fecha_pago)->format('d/m/Y H:i') }}
-                                            @endif
-                                        </h6>
-                                    </td>
-                                    <td>
-                                        <h6 class="text-center">
-                                            {{ strtoupper(\Carbon\Carbon::parse($pago->mes_pago)->formatLocalized('%B')) }}
-                                        </h6>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td>
+                                    <h6 class="text-center">{{ $pago->modulo }}</h6>
+                                </td>
+                                <td>
+                                    <h6 class="text-center">{{ $pago->monto }}</h6>
+                                </td>
+                                <td>
+                                    <h6 class="text-center">{{ $pago->a_pagar }}</h6>
+                                </td>
+                                <td>
+                                    <h6 class="text-center">
+                                        {{ \Carbon\Carbon::parse($pago->fecha_limite)->format('d/m/Y') }}
+                                    </h6>
+                                </td>
+                                <td>
+                                    <h6 class="text-center">
+                                        @if ($pago->fecha_pago)
+                                        {{ \Carbon\Carbon::parse($pago->fecha_pago)->format('d/m/Y H:i') }}
+                                        @endif
+                                    </h6>
+                                </td>
+                                <td>
+                                    <h6 class="text-center">
+                                        {{ strtoupper(\Carbon\Carbon::parse($pago->mes_pago)->formatLocalized('%B')) }}
+                                    </h6>
+                                </td>
+                            </tr>
                             @endforeach
                         </tbody>
                     </table>

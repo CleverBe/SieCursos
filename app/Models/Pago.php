@@ -19,5 +19,17 @@ class Pago extends Model
     {
         return $this->belongsTo(AlumnoHorario::class);
     }
+    public function getComprobanteAttribute($comprobante)
+    {
+        if ($comprobante == null) {
+            return 'noimage.png';
+        }
+        if (file_exists('storage/pagos/' . $comprobante)){
+            return $comprobante;
+        }
+        else {
+            return 'noimage.png';
+        }
+    }
 }
 

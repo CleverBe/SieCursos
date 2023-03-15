@@ -32,7 +32,7 @@
 
             <div class="widget-content">
                 <div class="table-responsive">
-                    <table class="table table-unbordered table-hover mb-4">
+                    <table class="table table-unbordered mb-4">
                         <thead>
                             <tr>
                                 <th class="table-th text-withe text-center">#</th>
@@ -127,7 +127,7 @@
         </div>
     </div>
     @include('livewire.inscripciones.form')
-    @include('livewire.inscripciones.tablaPagos')
+    @include('livewire.inscripciones.tablePagos')
     @include('livewire.inscripciones.formPagos')
     @include('livewire.inscripciones.notas')
 </div>

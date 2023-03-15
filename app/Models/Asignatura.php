@@ -28,15 +28,17 @@ class Asignatura extends Model
         return $this->morphMany(Material::class, 'materialable');
     }
 
-    public function getImagenAttribute()
+    public function getImageAttribute($image)
     {
-        if ($this->image == null) {
-            return 'noimage.jpg';
+        if ($image == null) {
+            return 'noimage.png';
         }
-        if (file_exists('storage/asignaturas/' . $this->image))
-            return $this->image;
+        if (file_exists('storage/asignaturas/' . $image)){
+            return $image;
+        }
         else {
-            return 'noimage.jpg';
+            return 'noimage.png';
         }
     }
+    
 }

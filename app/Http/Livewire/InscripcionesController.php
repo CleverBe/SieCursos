@@ -404,7 +404,7 @@ class InscripcionesController extends Component
             $imageTemp = $pago->comprobante;
             $pago->comprobante = $customFileName;
             $pago->save();
-            if ($imageTemp != null) {
+            if ($imageTemp != 'noimage.png') {
                 if (file_exists('storage/pagos/' . $imageTemp)) {
                     unlink('storage/pagos/' . $imageTemp);
                 }
@@ -418,7 +418,7 @@ class InscripcionesController extends Component
 
     public function export($nombre)
     {
-        return response()->download(public_path('storage/pagos/' . $nombre));
+        return response()->download(storage_path('app/public/pagos/'.$nombre));
     }
 
     public function EditNotas(AlumnoHorario $alumno_Horario)

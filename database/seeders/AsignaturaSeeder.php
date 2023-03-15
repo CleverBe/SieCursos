@@ -18,19 +18,16 @@ class AsignaturaSeeder extends Seeder
         Asignatura::create([
             'nombre' => 'Mantenimiento y reparación de celulares',
             'descripcion' => 'Aprende a diagnosticar y reparar fallas de hardware de celualres, cambio de componentes, cambio de pantallas.',
-            'image' => 'reparacionCelulares.PNG',
             'area_id' => 2,
         ]);
         Asignatura::create([
             'nombre' => 'Photoshop desde 0',
             'descripcion' => 'Aprende a hacer diseños únicos en este curso práctico desde 0.',
-            'image' => 'photoshopdesde0.jpg',
             'area_id' => 1,
         ]);
         Asignatura::create([
             'nombre' => 'Herramientas Office nivel básico',
             'descripcion' => 'Aprende a utilizar las herramientas de Office en este curso práctico desde 0.',
-            'image' => 'office.jpg',
             'area_id' => 3,
         ]);
     }

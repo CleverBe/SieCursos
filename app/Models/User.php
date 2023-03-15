@@ -44,6 +44,19 @@ class User extends Authenticatable
         return $this->hasMany(Material::class);
     }
 
+    public function getImageAttribute($image)
+    {
+        if ($image == null) {
+            return 'noimage.png';
+        }
+        if (file_exists('storage/usuarios/' . $image)){
+            return $image;
+        }
+        else {
+            return 'noimage.png';
+        }
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

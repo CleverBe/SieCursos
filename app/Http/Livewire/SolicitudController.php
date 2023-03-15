@@ -82,5 +82,10 @@ class SolicitudController extends Component
         $this->emit('item-updated', 'Se rechazó la solicitud');
     }
 
+    public function export($nombre)
+    {
+        return response()->download(storage_path('app/public/pagos/'.$nombre));
+    }
+
     protected $listeners = ['aprobar', 'rechazar'];
 }

@@ -144,7 +144,7 @@ class InicioCursoController extends Component
 
     public function export($nombre)
     {
-        return response()->download(public_path('storage/material/' . $nombre));
+        return response()->download(storage_path('app/public/material/' . $nombre));
     }
 
     public function resetUI()

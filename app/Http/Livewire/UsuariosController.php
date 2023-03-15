@@ -137,10 +137,9 @@ class UsuariosController extends Component
             if ($this->image) {
                 $customFileName = uniqid() . '_.' . $this->image->extension();
                 $this->image->storeAs('public/usuarios', $customFileName);
-            } else {
-                $customFileName = 'noimage.png';
+                $user->image = $customFileName;
             }
-            $user->image = $customFileName;
+
             $user->save();
 
             $user->syncRoles($this->profile);
@@ -232,7 +231,6 @@ class UsuariosController extends Component
             $imageTemp = $usuario->image;
             $usuario->image = $customFileName;
             $usuario->save();
-
             if ($imageTemp != 'noimage.png') {
                 if (file_exists('storage/usuarios/' . $imageTemp)) {
                     unlink('storage/usuarios/' . $imageTemp);
@@ -243,12 +241,13 @@ class UsuariosController extends Component
         $this->resetUI();
         $this->emit('item-updated', 'Usuario actualizado');
     }
+
     protected $listeners = ['deleteRow' => 'Destroy'];
 
     public function Destroy(User $usuario)
     {
         $imageName = $usuario->image;
-        if ($imageName != null) {
+        if ($imageName != 'noimage.png') {
             unlink('storage/usuarios/' . $imageName);
         }
 
