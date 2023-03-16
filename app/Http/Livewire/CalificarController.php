@@ -56,14 +56,16 @@ class CalificarController extends Component
     public function Update()
     {
         $rules = [
-            'primera_nota' => 'required|integer',
-            'segunda_nota' => 'required|integer',
+            'primera_nota' => 'required|integer|lte:100',
+            'segunda_nota' => 'required|integer|lte:100',
         ];
         $messages = [
             'primera_nota.required' => 'La nota es requerida.',
             'primera_nota.integer' => 'La nota debe ser un número.',
+            'primera_nota.lte' => 'La nota máxima es de 100.',
             'segunda_nota.required' => 'La nota es requerida.',
             'segunda_nota.integer' => 'La nota debe ser un número.',
+            'segunda_nota.lte' => 'La nota máxima es de 100.',
         ];
         $this->validate($rules, $messages);
 

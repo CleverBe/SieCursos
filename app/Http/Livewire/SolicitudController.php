@@ -84,7 +84,13 @@ class SolicitudController extends Component
 
     public function export($nombre)
     {
-        return response()->download(storage_path('app/public/pagos/'.$nombre));
+        $this->exportar($nombre);
+        $this->redirect($this->solicitud_id->id);
+    }
+    
+    public function exportar($nombre)
+    {
+        return response()->download(storage_path('app/public/pagos/' . $nombre));
     }
 
     protected $listeners = ['aprobar', 'rechazar'];

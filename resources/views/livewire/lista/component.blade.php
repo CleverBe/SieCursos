@@ -19,12 +19,12 @@
                 </ul>
             </div>
             <div class="row">
-                <div class="col-sm-12 col-md-2">
+                <div class="col-sm-12 col-md-3">
                     <div class="form-group">
                         <h6 class="form-control"><strong>Día : </strong></h6>
                     </div>
                 </div>
-                <div class="col-sm-12 col-md-2">
+                <div class="col-sm-12 col-md-3">
                     <div class="form-group">
                         <input type="date" wire:model="fechaAsistencia" class="form-control">
                     </div>
