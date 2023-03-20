@@ -153,7 +153,7 @@
             </div>
         </div>
     </div>
-    @include('livewire.inicioAulas.informacion')
+    @include('livewire.inicioAulas.information')
 </div>
 
 @section('javascript')
