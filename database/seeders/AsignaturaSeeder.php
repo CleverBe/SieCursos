@@ -17,7 +17,7 @@ class AsignaturaSeeder extends Seeder
         // ASIGNATURAS
         Asignatura::create([
             'nombre' => 'Mantenimiento y reparación de celulares',
-            'descripcion' => 'Aprende a diagnosticar y reparar fallas de hardware de celualres, cambio de componentes, cambio de pantallas.',
+            'descripcion' => 'Aprende a diagnosticar y reparar fallas de hardware de celulares, cambio de componentes, cambio de pantallas.',
             'area_id' => 2,
         ]);
         Asignatura::create([

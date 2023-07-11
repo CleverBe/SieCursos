@@ -9,13 +9,10 @@ use App\Models\Horario;
 use App\Models\Pago;
 use App\Models\SolicitudPago;
 use App\Models\User;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\PhpWord;
 
 class InscripcionesController extends Component
 {
@@ -121,7 +118,7 @@ class InscripcionesController extends Component
             $inscripcion->pendiente = $pendiente;
 
             $pagosA = Pago::where('alumno_horario_id', $inscripcion->idAlumno_horario)
-                ->where('fecha_limite', '<', $fecha_actual)
+                ->where('fecha_limite', '<=', $fecha_actual)
                 ->whereRaw('monto < a_pagar')
                 ->get();
             if (count($pagosA) > 0) {

@@ -1,1 +1,1 @@
-<label {{ $attributes }} style="font-weight: bold;">{{ $texto }}</label>
+<label {{ $attributes }} style="font-weight: 900; color:black">{{ $texto }}</label>
